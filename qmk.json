@@ -128,6 +128,24 @@
                 "HLC_NONE": "1",
                 "TARGET": "splitkb_halcyon_elora_rev2_default_hlc"
             }
+        ],
+        [
+            "splitkb/kyria/rev3",
+            "isaacsa51",
+            {
+                "HLC_CIRQUE_TRACKPAD": "1",
+                "HLC_TFT_DISPLAY": "1",
+                "TARGET": "kyria_display_trackpad"
+            }
+        ],
+        [
+            "splitkb/halcyon/kyria/rev4",
+            "isaacsa51",
+            {
+                "HLC_CIRQUE_TRACKPAD": "1",
+                "HLC_TFT_DISPLAY": "1",
+                "TARGET": "kyria_display_trackpad"
+            }
         ]
     ]
 }
