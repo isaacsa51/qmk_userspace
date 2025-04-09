@@ -146,6 +146,7 @@
                 "HLC_TFT_DISPLAY": "1",
                 "TARGET": "kyria_display_trackpad"
             }
-        ]
+        ],
+        ["splitkb/halcyon/kyria/rev4", "isaacsa51"]
     ]
 }
