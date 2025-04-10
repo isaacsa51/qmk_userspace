@@ -113,8 +113,8 @@ enum os_modes {
 #define WM       MO(_WM)
 #define DROID    MO(_DROID)
 
-// Combos
-// #define CTL_ESC  MT(MOD_LCTL, KC_ESC)
+// Aliases for One Shot mods keys
+#define OSHFT    OSM(MOD_LSFT)
 
 const uint16_t PROGMEM question_combo[] = {KC_N, KC_U, COMBO_END};
 
@@ -135,16 +135,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |Adjust| LGUI | LAlt | Space| Nav  |  | Sym  | Space| Enter| RGUI | Menu |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
  * | MUTE | ____ | _____ | ____ | ____ |                                              | MUTE | ____ | _____ | ____ | ____ |
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_ALPHA] = LAYOUT_split_3x6_5_hlc(
-    KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
-    CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_O , TILDE,
-    KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC,KC_CAPS,     FKEYS  , _______, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
-    KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
+        KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
+        CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_O , TILDE,
+        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+                                    ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
+        KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
 /*
@@ -165,7 +166,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_CANARIA] = LAYOUT_split_3x6_5_hlc(
-    KC_TAB  , KC_Q ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
+    KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
     CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_C , TILDE,
     KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K , KC_LBRC,KC_CAPS,     FKEYS  , _______, KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
                                 ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
@@ -299,15 +300,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * Windown Manager: Tiling window manager shortcuts for AeroSpace and GlazeWM.
+ * Notes: Mostly actions are done using Shift key, that's why there's is a One Shot Shift on thumb cluster and one normal in case of needing one...
+ * Declarations:
+ *   - W1, W2, WN... = Workspace number
+ *   - FLOAT = Toggle floating window
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |        |      |      |      |      |      |                              |      |      | FCW ↑|      | VolUp| Delete |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |        |  GUI |  Alt | Ctrl | Shift|      |                              |      | FCW ←| FCW ↓| FCW →| VolDn| Insert |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      |      |  W6  |  W7  |  W8  |  W9  |  W10 |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      | FLOAT|      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -315,11 +320,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_WM] = LAYOUT_split_3x6_5_hlc(
-      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-      _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
+      _______, _______, _______, _______, _______, _______,                                     _______, _______   , A(KC_UP) ,   _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, A(KC_LEFT),A(KC_DOWN),A(KC_RGHT), _______, _______,
+      _______, A(KC_1), A(KC_2), A(KC_3), A(KC_4), A(KC_5), _______, _______, _______, _______, A(KC_6), A(KC_7)   , A(KC_8)  ,   A(KC_9), A(KC_0), _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______,    _______,   _______,
+      _______, _______, _______, _______, _______,                                                       _______,    _______, _______, _______, _______
     ),
 
 /*
