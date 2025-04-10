@@ -39,10 +39,10 @@
      ¯¯¯¯¯¯¯¯¯¯
     - Developed for Halcyon Kyria Rev. 4 (Screen + Cirque Trackpad)
 
-    [ Passwords ]
+    [ Todo ]
      ¯¯¯¯¯¯¯¯¯¯
-    - To unlock the keyboard type "ao". It will flash a purple notification to let you know that it is active.
-      If you want to change the keyword, you can change it in before_key_handler to something like "me" or "hi"
+    - Add rgb lighting depending on the current layer.
+
 
 
     [ Settings ]
@@ -109,9 +109,9 @@ enum os_modes {
 #define NAV      TT(_NAV)
 #define FKEYS    TT(_FUNCTION)
 #define ADJUST   TT(_ADJUST)
-#define NUM      MO(_NUM)
-#define WM       MO(_WM)
-#define DROID    MO(_DROID)
+#define NUM      TT(_NUM)
+#define WM       TT(_WM)
+#define DROID    TT(_DROID)
 
 // Aliases for One Shot mods keys
 #define OSHFT    OSM(MOD_LSFT)
@@ -133,7 +133,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE|CapsLk|  |F-keys|      |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LGUI | LAlt | Space| Nav  |  | Sym  | Space| Enter| RGUI | Menu |
+ *                        |Adjust| LGUI | LAlt | Space| Nav  |  | Enter| Space|  SYM | RGUI | Menu |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -143,8 +143,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ALPHA] = LAYOUT_split_3x6_5_hlc(
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
         CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_O , TILDE,
-        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LBRC,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                    ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
+        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , DRAG_S ,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+                                    ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,    KC_ENTER, KC_BSPC, SYM , KC_RGUI, KC_APP,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
@@ -312,7 +312,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      |      |  W6  |  W7  |  W8  |  W9  |  W10 |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      | FLOAT|      |  |      |      |      |      |      |
+ *                        |      |      |      | FLOAT|      |  |      | OSHFT|      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -323,7 +323,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       _______, _______, _______, _______, _______, _______,                                     _______, _______   , A(KC_UP) ,   _______, _______, _______,
       _______, _______, _______, _______, _______, _______,                                     _______, A(KC_LEFT),A(KC_DOWN),A(KC_RGHT), _______, _______,
       _______, A(KC_1), A(KC_2), A(KC_3), A(KC_4), A(KC_5), _______, _______, _______, _______, A(KC_6), A(KC_7)   , A(KC_8)  ,   A(KC_9), A(KC_0), _______,
-                                 _______, _______, _______, _______, _______, _______, _______, _______,    _______,   _______,
+                                 _______, _______, KC_LSFT, _______, _______, _______, OSHFT  , _______,    _______,   _______,
       _______, _______, _______, _______, _______,                                                       _______,    _______, _______, _______, _______
     ),
 
@@ -354,18 +354,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-#if defined(ENCODER_MAP_ENABLE)
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),  ENCODER_CCW_CW(KC_VOLD, KC_VOLU),  ENCODER_CCW_CW(KC_PGUP, KC_PGDN),  ENCODER_CCW_CW(KC_PGUP, KC_PGDN)  },
-    [1] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-    [2] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-    [3] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-    [4] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-    [5] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-    [6] = { ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______),  ENCODER_CCW_CW(_______, _______)  },
-};
-#endif
-
 bool awaiting_smart_tilde = false;
 bool set_scrolling = false;
 static uint8_t current_os = OS_WIN;
@@ -385,8 +373,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     
     if (keycode == DRAG_S && record->event.pressed) {
         set_scrolling = !set_scrolling;
+        return false;
     }
-    return true;
 
     switch (keycode) {
         case TILDE:
