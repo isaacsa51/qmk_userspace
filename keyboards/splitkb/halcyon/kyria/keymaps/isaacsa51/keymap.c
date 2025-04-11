@@ -93,6 +93,7 @@ enum custom_keycodes {
     TG_OS,
     CMD,
     DRAG_S,
+    DEL_LINE,
 };
 
 // Define OS from layers 
@@ -113,25 +114,95 @@ enum os_modes {
 #define WM       TT(_WM)
 #define DROID    TT(_DROID)
 
+// Homerow mods
+#define HM_A LCTL_T(KC_A)
+#define HM_R LALT_T(KC_R)
+#define HM_S LGUI_T(KC_S)
+#define HM_T LSFT_T(KC_T)
+
+#define HM_N LSFT_T(KC_N)
+#define HM_E LGUI_T(KC_E)
+#define HM_I LALT_T(KC_I)
+#define HM_O LCTL_T(KC_O)
+
 // Aliases for One Shot mods keys
 #define OSHFT    OSM(MOD_LSFT)
 
+// Combo key definitions
+enum combo_events {
+    COMBO_COPY,
+    COMBO_PASTE,
+    COMBO_CUT,
+};
+
 const uint16_t PROGMEM question_combo[] = {KC_N, KC_U, COMBO_END};
+const uint16_t PROGMEM copy_combo[]  = {KC_W, KC_F, KC_P, COMBO_END};
+const uint16_t PROGMEM paste_combo[] = {KC_R, KC_S, KC_T, COMBO_END};
+const uint16_t PROGMEM cut_combo[]   = {KC_X, KC_C, KC_D, COMBO_END};
+const uint16_t PROGMEM equal_combo[] = {KC_S, KC_T, COMBO_END};
+const uint16_t PROGMEM combo_bracket_l[]  = {KC_W, KC_F, COMBO_END}; // [    
+const uint16_t PROGMEM combo_bracket_r[]  = {KC_F, KC_P, COMBO_END}; // ]
+const uint16_t PROGMEM combo_dash[]       = {KC_R, KC_S, COMBO_END}; // -
+const uint16_t PROGMEM combo_brace_l[]    = {KC_X, KC_C, COMBO_END}; // {
+const uint16_t PROGMEM combo_brace_r[]    = {KC_C, KC_D, COMBO_END}; // }
+const uint16_t PROGMEM combo_plus[]       = {KC_T, KC_G, COMBO_END}; // +
+const uint16_t PROGMEM combo_at[]         = {KC_W, KC_R, COMBO_END}; // @
+const uint16_t PROGMEM combo_underscore[] = {KC_S, KC_D, COMBO_END}; // _
+const uint16_t PROGMEM combo_paren_l[]    = {KC_L, KC_U, COMBO_END}; // (
+const uint16_t PROGMEM combo_paren_r[]    = {KC_U, KC_Y, COMBO_END}; // )
+const uint16_t PROGMEM combo_colon[]      = {KC_N, KC_E, COMBO_END}; // :
+const uint16_t PROGMEM combo_pipe[]       = {KC_M, KC_N, COMBO_END}; // |
+const uint16_t PROGMEM combo_lt[]         = {KC_H, KC_COMM, COMBO_END}; // <
+const uint16_t PROGMEM combo_gt[]         = {KC_COMM, KC_DOT, COMBO_END}; // >
+const uint16_t PROGMEM combo_quote[]      = {KC_E, KC_I, COMBO_END}; // "
+const uint16_t PROGMEM combo_asterisk[]   = {KC_U, KC_E, COMBO_END}; // asterisk
+const uint16_t PROGMEM combo_bslash[]     = {KC_E, KC_DOT, COMBO_END}; // inverted slash
+const uint16_t PROGMEM combo_caret[]      = {KC_J, KC_M, COMBO_END}; // ^
+const uint16_t PROGMEM combo_exclaim[]    = {KC_F, KC_T, COMBO_END}; // !
+const uint16_t PROGMEM combo_dollar[]     = {KC_T, KC_P, COMBO_END}; // $
+const uint16_t PROGMEM combo_hash[]       = {KC_F, KC_S, COMBO_END}; // #
 
 combo_t key_combos[] = {
-    COMBO(question_combo, LSFT(KC_SLASH)),
+    [COMBO_COPY]  = COMBO(copy_combo,  COMBO_COPY),
+    [COMBO_PASTE] = COMBO(paste_combo, COMBO_PASTE),
+    [COMBO_CUT]   = COMBO(cut_combo,   COMBO_CUT),
+    COMBO(equal_combo, KC_EQUAL),           // =
+    COMBO(question_combo, LSFT(KC_SLASH)),  // ?
+    COMBO(combo_bracket_l,  KC_LBRC),  // [
+    COMBO(combo_bracket_r,  KC_RBRC),  // ]
+    COMBO(combo_dash,       KC_MINS),  // -
+    COMBO(combo_brace_l,    KC_LCBR),  // {
+    COMBO(combo_brace_r,    KC_RCBR),  // }
+    COMBO(combo_plus,       KC_PLUS),  // +
+    COMBO(combo_at,         KC_AT),    // @
+    COMBO(combo_underscore, KC_UNDS),  // _
+    COMBO(combo_paren_l,    KC_LPRN),  // (
+    COMBO(combo_paren_r,    KC_RPRN),  // )
+    COMBO(combo_colon,      KC_COLN),  // :
+    COMBO(combo_pipe,       KC_PIPE),  // |
+    COMBO(combo_lt,         KC_LT),    // <
+    COMBO(combo_gt,         KC_GT),    // >
+    COMBO(combo_quote,      KC_DQUO),  // "
+    COMBO(combo_asterisk,   KC_ASTR),  // asterisk
+    COMBO(combo_bslash,     KC_BSLS),  // inverted slash
+    COMBO(combo_caret,      KC_CIRC),  // ^
+    COMBO(combo_exclaim,    KC_EXLM),  // !
+    COMBO(combo_dollar,     KC_DLR),   // $
+    COMBO(combo_hash,       KC_HASH),  // #
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
  * Base Layer: Colemak DH
  *
+ * Homerow mods on: ARST NEIO 
+ * In this order: CTRL, ALT, GUI, SHIFT
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |  TAB   |   Q  |   W  |   F  |   P  |   B  |                              |   J  |   L  |   U  |   Y  | ;  : |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |  CMD   |   A  |   R  |   S  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   O  | TILDE  |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE|CapsLk|  |F-keys|      |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
+ * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE|CapsLk|  |F-keys|  WM  |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |Adjust| LGUI | LAlt | Space| Nav  |  | Enter| Space|  SYM | RGUI | Menu |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -142,7 +213,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_ALPHA] = LAYOUT_split_3x6_5_hlc(
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
-        CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_O , TILDE,
+        CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
         KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , DRAG_S ,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
                                     ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,    KC_ENTER, KC_BSPC, SYM , KC_RGUI, KC_APP,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
@@ -167,21 +238,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_CANARIA] = LAYOUT_split_3x6_5_hlc(
     KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
-    CMD ,     KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_C , TILDE,
+    CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_C , TILDE,
     KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K , KC_LBRC,KC_CAPS,     FKEYS  , _______, KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
                                 ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
     KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
 /*
- * Nav Layer: Media, navigation
+ * Nav Layer: Media, number & navigation
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |      |      |      |                              | PgUp | Home |   ↑  | End  | VolUp| Delete |
+ * |        |      |  7   |   8  |   9  |      |                              | PgUp | Home |   ↑  | End  | VolUp| Delete |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |  GUI |  Alt | Ctrl | Shift|      |                              | PgDn |  ←   |   ↓  |   →  | VolDn| Insert |
+ * |        |      |  4   |   5  |   6  |  0   |                              | PgDn |  ←   |   ↓  |   →  | VolDn| Insert |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |ScLck |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
+ * |        |      |  1   |   2  |   3  |      |      |ScLck |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -191,9 +262,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_NAV] = LAYOUT_split_3x6_5_hlc(
-    _______, _______, _______, _______, _______, _______,                                     KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_VOLU, KC_DEL,
-    _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, _______,                                     KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS,
-    _______, _______, _______, _______, _______, _______, _______, KC_SCRL, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
+    _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     _______, _______, _______, _______, _______, _______,
+    _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     _______, KC_RSFT, KC_RCTL, KC_LALT, KC_RGUI, _______,
+    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, KC_SCRL, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
                                _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______,_______,_______,                                                _______, _______, _______, _______, _______
     ),
@@ -302,17 +373,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Windown Manager: Tiling window manager shortcuts for AeroSpace and GlazeWM.
  * Notes: Mostly actions are done using Shift key, that's why there's is a One Shot Shift on thumb cluster and one normal in case of needing one...
  * Declarations:
- *   - W1, W2, WN... = Workspace number
- *   - FLOAT = Toggle floating window
+ *   - W1, W2, WN...: Workspace number = Alt+N
+ *   - FLOAT: Toggle floating window = Alt+Shift+Space
+ *   - DIRE: Change tiling direction = Alt+v
+ *   - ICW/DCW: Decrease/Increase window width = Alt+U / Alt+P
+ *   - ICH/DCH: ...               windows height = Alt+I / Alt+O
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |      |      |      |                              |      |      | FCW ↑|      | VolUp| Delete |
+ * |        |      |      |      |      |      |                              |      |      | FCW ↑|      | DCW  |  ICW   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |  GUI |  Alt | Ctrl | Shift|      |                              |      | FCW ←| FCW ↓| FCW →| VolDn| Insert |
+ * |        |  GUI |  Alt | Ctrl | Shift|      |                              | DIRE | FCW ←| FCW ↓| FCW →| DCH  |  ICH   |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      |      |  W6  |  W7  |  W8  |  W9  |  W10 |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      | FLOAT|      |  |      | OSHFT|      |      |      |
+ *                        |      |      |      | FLOAT| SHIFT|  |      | OSHFT|      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -320,10 +394,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_WM] = LAYOUT_split_3x6_5_hlc(
-      _______, _______, _______, _______, _______, _______,                                     _______, _______   , A(KC_UP) ,   _______, _______, _______,
-      _______, _______, _______, _______, _______, _______,                                     _______, A(KC_LEFT),A(KC_DOWN),A(KC_RGHT), _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, _______   , A(KC_UP) ,   _______, A(KC_U), A(KC_P),
+      _______, _______, _______, _______, _______, _______,                                     A(KC_V), A(KC_LEFT),A(KC_DOWN),A(KC_RGHT), A(KC_I), A(KC_O),
       _______, A(KC_1), A(KC_2), A(KC_3), A(KC_4), A(KC_5), _______, _______, _______, _______, A(KC_6), A(KC_7)   , A(KC_8)  ,   A(KC_9), A(KC_0), _______,
-                                 _______, _______, KC_LSFT, _______, _______, _______, OSHFT  , _______,    _______,   _______,
+                                 _______, _______,LSA_T(KC_SPC),KC_LSFT,    _______, _______, OSHFT  , _______,    _______,   _______,
       _______, _______, _______, _______, _______,                                                       _______,    _______, _______, _______, _______
     ),
 
@@ -367,6 +441,48 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         mouse_report.y = 0;
     }
     return mouse_report;
+}
+
+void process_combo_event(uint16_t combo_index, bool pressed) {
+    if (!pressed) return;
+
+    switch (combo_index) {
+        case COMBO_COPY:
+            if (current_os == OS_MAC) {
+                register_code(KC_LGUI);
+                tap_code(KC_C);
+                unregister_code(KC_LGUI);
+            } else {
+                register_code(KC_LCTL);
+                tap_code(KC_INS);
+                unregister_code(KC_LCTL);
+            }
+            break;
+
+        case COMBO_PASTE:
+            if (current_os == OS_MAC) {
+                register_code(KC_LGUI);
+                tap_code(KC_V);
+                unregister_code(KC_LGUI);
+            } else {
+                register_code(KC_LSFT);
+                tap_code(KC_INS);
+                unregister_code(KC_LSFT);
+            }
+            break;
+
+        case COMBO_CUT:
+            if (current_os == OS_MAC) {
+                register_code(KC_LGUI);
+                tap_code(KC_X);
+                unregister_code(KC_LGUI);
+            } else {
+                register_code(KC_LCTL);
+                tap_code(KC_X);
+                unregister_code(KC_LCTL);
+            }
+            break;
+    }
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -424,8 +540,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                         // En Mac: CMD + Backspace → borrar línea
                         tap_code16(LGUI(KC_BSPC));
                     } else {
-                        // En Linux/Win: Ctrl + U
-                        tap_code16(LCTL(KC_U));
+                        // En Win: Shift+Home+delete 
+                        register_code(KC_LSFT);
+                        tap_code(KC_HOME);
+                        unregister_code(KC_LSFT);
+
+                        wait_ms(10); // Espera pequeña por si el sistema es lento
+
+                        // Delete para eliminar la selección
+                        tap_code(KC_DEL);
                     }
                 } else {
                     // Solo BSPC
@@ -452,7 +575,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             bool is_caps = host_keyboard_led_state().caps_lock;
             bool is_upper = is_shift ^ is_caps;
 
-            switch (keycode) {
+            switch (keycode) { 
                 case KC_N:
                     // Enviar ñ (o Ñ si mayúscula)
                     if (current_os == OS_WIN) {
@@ -487,9 +610,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 case KC_A: case KC_E: case KC_I: case KC_O: case KC_U:
                     // Tilde + vocal
                     if (current_os == OS_WIN) {
-                        register_code(KC_RALT);
                         tap_code(KC_QUOTE); // ´
-                        unregister_code(KC_RALT);
                         if (is_upper) register_code(KC_LSFT);
                         tap_code(keycode);
                         if (is_upper) unregister_code(KC_LSFT);
@@ -501,31 +622,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                         tap_code(keycode);
                         if (is_upper) unregister_code(KC_LSFT);
                     }
-                    return false;
-
-                case KC_G:
-                    // diéresis + g
-                    if (is_upper) tap_code(KC_G); else tap_code(KC_G);
-
-                    if (current_os == OS_MAC) {
-                        register_code(KC_LALT);
-                        tap_code(KC_U); // Option + u = ¨
-                        unregister_code(KC_LALT);
-                        tap_code(KC_SPC); // En mac, luego espacio
-                    } else {
-                        register_code(KC_RALT);
-                        tap_code(KC_QUOT); // AltGr + "
-                        unregister_code(KC_RALT);
-                    }
-                    return false;
-
-                case KC_S: case KC_L: case KC_M: case KC_D:
-                case KC_R: case KC_T: case KC_C:
-                    // Apóstrofe inglés + letra
-                    tap_code(KC_QUOTE);
-                    if (is_upper) register_code(KC_LSFT);
-                    tap_code(keycode);
-                    if (is_upper) unregister_code(KC_LSFT);
                     return false;
 
                 default:

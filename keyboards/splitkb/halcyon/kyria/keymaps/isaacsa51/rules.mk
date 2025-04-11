@@ -6,4 +6,4 @@ USER_NAME := halcyon_modules
 # Enable combos
 COMBO_ENABLE = yes
 
-RGB_MATRIX_ENABLE = yes
+LAYER_LOCK_ENABLE = yes
