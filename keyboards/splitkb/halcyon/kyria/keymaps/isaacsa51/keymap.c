@@ -75,6 +75,9 @@
 */
 
 #include QMK_KEYBOARD_H
+#include "custom_keys/custom_keys.h"
+#include "combos/combos.h"
+#include "os_detection/os_layer.h"
 
 enum layers {
     _ALPHA = 0,
@@ -83,23 +86,8 @@ enum layers {
     _SYM,
     _FUNCTION,
     _ADJUST,
-    _NUM,
     _WM,
     _DROID,
-};
-
-enum custom_keycodes {
-    TILDE,
-    TG_OS,
-    CMD,
-    DRAG_S,
-    DEL_LINE,
-};
-
-// Define OS from layers 
-enum os_modes {
-    OS_MAC,
-    OS_WIN,
 };
 
 // Aliases for readability
@@ -110,7 +98,6 @@ enum os_modes {
 #define NAV      TT(_NAV)
 #define FKEYS    TT(_FUNCTION)
 #define ADJUST   TT(_ADJUST)
-#define NUM      TT(_NUM)
 #define WM       TT(_WM)
 #define DROID    TT(_DROID)
 
@@ -119,7 +106,6 @@ enum os_modes {
 #define HM_R LALT_T(KC_R)
 #define HM_S LGUI_T(KC_S)
 #define HM_T LSFT_T(KC_T)
-
 #define HM_N LSFT_T(KC_N)
 #define HM_E LGUI_T(KC_E)
 #define HM_I LALT_T(KC_I)
@@ -128,44 +114,32 @@ enum os_modes {
 // Aliases for One Shot mods keys
 #define OSHFT    OSM(MOD_LSFT)
 
-// Combo key definitions
-enum combo_events {
-    COMBO_COPY,
-    COMBO_PASTE,
-    COMBO_CUT,
-};
-
-const uint16_t PROGMEM question_combo[] = {KC_N, KC_U, COMBO_END};
-const uint16_t PROGMEM copy_combo[]  = {KC_W, KC_F, KC_P, COMBO_END};
-const uint16_t PROGMEM paste_combo[] = {KC_R, KC_S, KC_T, COMBO_END};
-const uint16_t PROGMEM cut_combo[]   = {KC_X, KC_C, KC_D, COMBO_END};
-const uint16_t PROGMEM equal_combo[] = {KC_S, KC_T, COMBO_END};
-const uint16_t PROGMEM combo_bracket_l[]  = {KC_W, KC_F, COMBO_END}; // [    
-const uint16_t PROGMEM combo_bracket_r[]  = {KC_F, KC_P, COMBO_END}; // ]
-const uint16_t PROGMEM combo_dash[]       = {KC_R, KC_S, COMBO_END}; // -
-const uint16_t PROGMEM combo_brace_l[]    = {KC_X, KC_C, COMBO_END}; // {
-const uint16_t PROGMEM combo_brace_r[]    = {KC_C, KC_D, COMBO_END}; // }
-const uint16_t PROGMEM combo_plus[]       = {KC_T, KC_G, COMBO_END}; // +
-const uint16_t PROGMEM combo_at[]         = {KC_W, KC_R, COMBO_END}; // @
-const uint16_t PROGMEM combo_underscore[] = {KC_S, KC_D, COMBO_END}; // _
-const uint16_t PROGMEM combo_paren_l[]    = {KC_L, KC_U, COMBO_END}; // (
-const uint16_t PROGMEM combo_paren_r[]    = {KC_U, KC_Y, COMBO_END}; // )
-const uint16_t PROGMEM combo_colon[]      = {KC_N, KC_E, COMBO_END}; // :
-const uint16_t PROGMEM combo_pipe[]       = {KC_M, KC_N, COMBO_END}; // |
-const uint16_t PROGMEM combo_lt[]         = {KC_H, KC_COMM, COMBO_END}; // <
-const uint16_t PROGMEM combo_gt[]         = {KC_COMM, KC_DOT, COMBO_END}; // >
-const uint16_t PROGMEM combo_quote[]      = {KC_E, KC_I, COMBO_END}; // "
-const uint16_t PROGMEM combo_asterisk[]   = {KC_U, KC_E, COMBO_END}; // asterisk
-const uint16_t PROGMEM combo_bslash[]     = {KC_E, KC_DOT, COMBO_END}; // inverted slash
-const uint16_t PROGMEM combo_caret[]      = {KC_J, KC_M, COMBO_END}; // ^
-const uint16_t PROGMEM combo_exclaim[]    = {KC_F, KC_T, COMBO_END}; // !
-const uint16_t PROGMEM combo_dollar[]     = {KC_T, KC_P, COMBO_END}; // $
-const uint16_t PROGMEM combo_hash[]       = {KC_F, KC_S, COMBO_END}; // #
+// TODO: Migrate these combos to combos.c
+const uint16_t PROGMEM question_combo[] = {HM_N, KC_U, COMBO_END};
+const uint16_t PROGMEM equal_combo[] = {HM_S, HM_T, COMBO_END};
+const uint16_t PROGMEM combo_dash[] = {HM_R, HM_S, COMBO_END};
+const uint16_t PROGMEM combo_colon[] = {HM_N, HM_E, COMBO_END};
+const uint16_t PROGMEM combo_pipe[] = {KC_M, HM_N, COMBO_END};
+const uint16_t PROGMEM combo_quote[] = {HM_E, HM_I, COMBO_END};
+const uint16_t PROGMEM combo_asterisk[] = {KC_U, HM_E, COMBO_END};
+const uint16_t PROGMEM combo_bslash[] = {HM_E, KC_DOT, COMBO_END};
+const uint16_t PROGMEM combo_exclaim[] = {KC_F, HM_T, COMBO_END};
+const uint16_t PROGMEM combo_dollar[] = {HM_T, KC_P, COMBO_END};
+const uint16_t PROGMEM combo_hash[] = {KC_F, HM_S, COMBO_END};
+const uint16_t PROGMEM combo_bracket_l[]  = {KC_W, KC_F, COMBO_END}; 
+const uint16_t PROGMEM combo_bracket_r[]  = {KC_F, KC_P, COMBO_END};
+const uint16_t PROGMEM combo_brace_l[]    = {KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM combo_brace_r[]    = {KC_C, KC_D, COMBO_END};
+const uint16_t PROGMEM combo_plus[]       = {HM_T, KC_G, COMBO_END};
+const uint16_t PROGMEM combo_at[]         = {KC_W, HM_R, COMBO_END};
+const uint16_t PROGMEM combo_underscore[] = {HM_S, KC_D, COMBO_END};
+const uint16_t PROGMEM combo_paren_l[]    = {KC_L, KC_U, COMBO_END};
+const uint16_t PROGMEM combo_paren_r[]    = {KC_U, KC_Y, COMBO_END};
+const uint16_t PROGMEM combo_lt[]         = {KC_H, KC_COMM, COMBO_END};
+const uint16_t PROGMEM combo_gt[]         = {KC_COMM, KC_DOT, COMBO_END};
+const uint16_t PROGMEM combo_caret[]      = {KC_J, KC_M, COMBO_END};
 
 combo_t key_combos[] = {
-    [COMBO_COPY]  = COMBO(copy_combo,  COMBO_COPY),
-    [COMBO_PASTE] = COMBO(paste_combo, COMBO_PASTE),
-    [COMBO_CUT]   = COMBO(cut_combo,   COMBO_CUT),
     COMBO(equal_combo, KC_EQUAL),           // =
     COMBO(question_combo, LSFT(KC_SLASH)),  // ?
     COMBO(combo_bracket_l,  KC_LBRC),  // [
@@ -205,7 +179,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE|CapsLk|  |F-keys|  WM  |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust| LGUI | LAlt | Space| Nav  |  | Enter| Space|  SYM | RGUI | Menu |
+ *                        |Adjust|  WM  |  NAV | Space|AltSpc|  | Enter| Space|  SYM | RGUI | Menu |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -216,7 +190,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
         CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
         KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , DRAG_S ,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                    ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,    KC_ENTER, KC_BSPC, SYM , KC_RGUI, KC_APP,
+                                    ADJUST,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_RGUI, KC_APP,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
@@ -263,9 +237,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_NAV] = LAYOUT_split_3x6_5_hlc(
-    _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     _______, _______, _______, _______, _______, _______,
-    _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     _______, KC_RSFT, KC_RCTL, KC_LALT, KC_RGUI, _______,
-    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, KC_SCRL, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
+    _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_VOLU, KC_DEL,
+    _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS,
+    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
                                _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______,_______,_______,                                                _______, _______, _______, _______, _______
     ),
@@ -294,31 +268,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______,  _______, _______, _______,                                                       _______, _______, _______, _______, _______
     ),
-
-/*
- * Numbers Layer
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |  7   |   8  |   9  |      |                              |      |      |      |      |      |        |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      |  4   |   5  |   6  |  0   |                              |      | Shift| Ctrl |  Alt |  GUI |        |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |  1   |   2  |   3  |      |      |      |  |      |      |      |      |      |      |      |        |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        `----------------------------------'  `----------------------------------' 
- * ,-----------------------------------.                                              ,-----------------------------------.
- * |      |      |       |      |      |                                              |      |      |       |      |      |
- * `-----------------------------------'                                              `-----------------------------------'
- */
-[_NUM] = LAYOUT_split_3x6_5_hlc(
-    _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     _______, _______, _______, _______, _______, _______,
-    _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     _______, KC_RSFT, KC_RCTL, KC_LALT, KC_RGUI, _______,
-    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-                               _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______,  _______, _______, _______,                                                       _______, _______, _______, _______, _______
-),
 
 /*
  * Function Layer: Function keys
@@ -368,7 +317,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, _______, RM_SATD, RM_HUED, RM_VALD, RM_PREV, _______,
                                _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
     _______, _______,  _______, _______, _______,                                                      _______, _______, _______, _______, _______
-),
+    ),
 
 /*
  * Windown Manager: Tiling window manager shortcuts for AeroSpace and GlazeWM.
@@ -431,8 +380,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool awaiting_smart_tilde = false;
 bool set_scrolling = false;
-static uint8_t current_os = OS_WIN;
-static uint8_t mod_state;
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (set_scrolling) {
@@ -444,197 +391,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     return mouse_report;
 }
 
-void process_combo_event(uint16_t combo_index, bool pressed) {
-    if (!pressed) return;
-
-    switch (combo_index) {
-        case COMBO_COPY:
-            if (current_os == OS_MAC) {
-                register_code(KC_LGUI);
-                tap_code(KC_C);
-                unregister_code(KC_LGUI);
-            } else {
-                register_code(KC_LCTL);
-                tap_code(KC_INS);
-                unregister_code(KC_LCTL);
-            }
-            break;
-
-        case COMBO_PASTE:
-            if (current_os == OS_MAC) {
-                register_code(KC_LGUI);
-                tap_code(KC_V);
-                unregister_code(KC_LGUI);
-            } else {
-                register_code(KC_LSFT);
-                tap_code(KC_INS);
-                unregister_code(KC_LSFT);
-            }
-            break;
-
-        case COMBO_CUT:
-            if (current_os == OS_MAC) {
-                register_code(KC_LGUI);
-                tap_code(KC_X);
-                unregister_code(KC_LGUI);
-            } else {
-                register_code(KC_LCTL);
-                tap_code(KC_X);
-                unregister_code(KC_LCTL);
-            }
-            break;
-    }
-}
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    
-    if (keycode == DRAG_S && record->event.pressed) {
-        set_scrolling = !set_scrolling;
-        return false;
-    }
-
-    switch (keycode) {
-        case TILDE:
-            if (record->event.pressed) {
-                awaiting_smart_tilde = true;
-            }
-            return false;
-
-        case CMD:
-            if (record->event.pressed) {
-                if (current_os == OS_MAC) {
-                    register_code(KC_LGUI);
-                } else {
-                    register_code(KC_LCTL);
-                }
-            } else {
-                if (current_os == OS_MAC) {
-                    unregister_code(KC_LGUI);
-                } else {
-                    unregister_code(KC_LCTL);
-                }
-            }
-            return false;
-
-        case KC_BSPC:
-            if(record->event.pressed) {
-                mod_state = get_mods() | get_oneshot_mods();
-                
-                bool shift = mod_state & MOD_MASK_SHIFT;
-                bool cmd = mod_state & (MOD_LGUI | MOD_RGUI);
-
-                del_mods(MOD_MASK_SHIFT | MOD_MASK_GUI);
-
-                if (cmd && shift) {
-                    // CMD + SHIFT + BSPC → Suprimir
-                    tap_code(KC_DEL);
-                } else if (cmd) {
-                    // CMD + BSPC → Borrar palabra
-                    if (current_os == OS_MAC) {
-                        tap_code16(LALT(KC_BSPC));  // Opción + Backspace
-                    } else {
-                        tap_code16(LCTL(KC_BSPC)); // Ctrl + Backspace
-                    }
-                } else if (shift) {
-                    // SHIFT + BSPC → Borrar línea
-                    if (current_os == OS_MAC) {
-                        // En Mac: CMD + Backspace → borrar línea
-                        tap_code16(LGUI(KC_BSPC));
-                    } else {
-                        // En Win: Shift+Home+delete 
-                        register_code(KC_LSFT);
-                        tap_code(KC_HOME);
-                        unregister_code(KC_LSFT);
-
-                        wait_ms(10); // Espera pequeña por si el sistema es lento
-
-                        // Delete para eliminar la selección
-                        tap_code(KC_DEL);
-                    }
-                } else {
-                    // Solo BSPC
-                    tap_code(KC_BSPC);
-                }
-
-                set_mods(mod_state);
-                return false;
-            }
-
-        case TG_OS:
-            if (record->event.pressed) {
-                current_os = (current_os == OS_MAC) ? OS_WIN : OS_MAC;
-            }
-            return false;
-    }
-
-    if (awaiting_smart_tilde) {
-        if (record->event.pressed) {
-            awaiting_smart_tilde = false;
-
-            // Detectar mayúsculas
-            bool is_shift = get_mods() & MOD_MASK_SHIFT;
-            bool is_caps = host_keyboard_led_state().caps_lock;
-            bool is_upper = is_shift ^ is_caps;
-
-            switch (keycode) { 
-                case KC_N:
-                    // Enviar ñ (o Ñ si mayúscula)
-                    if (current_os == OS_WIN) {
-                        if (is_upper) {
-                            // AltGr + Shift + N → Ñ
-                            register_code(KC_RALT);
-                            register_code(KC_LSFT);
-                            tap_code(KC_N);
-                            unregister_code(KC_LSFT);
-                            unregister_code(KC_RALT);
-                        } else {
-                            // AltGr + n → ñ
-                            register_code(KC_RALT);
-                            tap_code(KC_N);
-                            unregister_code(KC_RALT);
-                        }
-                    } else if (current_os == OS_MAC) {
-                        // Option + E + N or Shift+N
-                        register_code(KC_LALT);
-                        tap_code(KC_E);
-                        unregister_code(KC_LALT);
-                        if (is_upper) {
-                            register_code(KC_LSFT);
-                            tap_code(KC_N);
-                            unregister_code(KC_LSFT);
-                        } else {
-                            tap_code(KC_N);
-                        }
-                    }
-                    return false;
-
-                case KC_A: case KC_E: case KC_I: case KC_O: case KC_U:
-                    // Tilde + vocal
-                    if (current_os == OS_WIN) {
-                        tap_code(KC_QUOTE); // ´
-                        if (is_upper) register_code(KC_LSFT);
-                        tap_code(keycode);
-                        if (is_upper) unregister_code(KC_LSFT);
-                    } else if (current_os == OS_MAC) {
-                        register_code(KC_LALT);
-                        tap_code(KC_E); // alt+e para ´
-                        unregister_code(KC_LALT);
-                        if (is_upper) register_code(KC_LSFT);
-                        tap_code(keycode);
-                        if (is_upper) unregister_code(KC_LSFT);
-                    }
-                    return false;
-
-                default:
-                    // Comportamiento por defecto: manda '
-                    tap_code(KC_QUOTE);
-                    if (is_upper) register_code(KC_LSFT);
-                    tap_code(keycode);
-                    if (is_upper) unregister_code(KC_LSFT);
-                    return false;
-            }
-        }
-    }
-    
+    if (!process_record_user_custom(keycode, record)) return false;
     return true;
 }
