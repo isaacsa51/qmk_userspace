@@ -359,7 +359,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
 /*
- * Android/IntelliJ: Basic shortcouts for JetBrains IDE using Mac for all plugin to match macOS and Windows shortcuts 
+ * Android/IntelliJ: Basic shortcuts for JetBrains IDE using Mac for all plugin to match macOS and Windows shortcuts 
  * 
  * NOTES: Make sure to backup all shortcuts and preferences using Backup And Sync plugin to handle keymaps alongside MacForAll plugin to override and translate keymap between Mac and Windows
  * 
@@ -382,12 +382,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *    - SWTCHR: Switcher (Ctrl+Tab) // TODO: Make the Ctrl key sticky...
  *    - IDENT: Indent all file code(Ctrl+Alt+I)
  *    - RFORMT: Reformat Code (Ctrl+Alt+L)
- *    - 
+ *    - RFACTR: Refactor this...
+ *    - SEARCH: Search everywhere
  * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        | CLOSE|      |      | JUMP |      |                              |      |      |FCLWN |      | FCRWN|        |
+ * |        | CLOSE|      |      | JUMP |      |                              |      |RFACTR|FCLWN |      | FCRWN|        |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      |      | FIND |  RUN | DEBUG|                              |      |QCKACT|NEWFLE| IDENT|      |        |
+ * |        |      |      | FIND |  RUN | DEBUG|                              |SEARCH|QCKACT|NEWFLE| IDENT|      |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |  GIT |      | RPLCE|GLDSYN|BRKPNT|      |      |  |      |      |      |SWTCHR|PRETAB|RFORMT| NXTAB|        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -406,6 +407,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
   ),
+
+/*
+ * Git: This layer is focused to work only on any IntelliJ IDE
+ *
+ * Notes: Each keybind name is what command should run for any git command
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |        |      |      | PUSH | PULL |      |                              |      |NWBRCH|SHELVE|      |      |        |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |        |      |      |      |RLLBCK|      |      |      |  |      |      |      |      |      |      |      |        |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ * ,-----------------------------------.                                              ,-----------------------------------.
+ * |      |      |       |      |      |                                              |      |      |       |      |      |
+ * `-----------------------------------'                                              `-----------------------------------'
+ */
+    [_LAYERINDEX] = LAYOUT_split_3x6_5_hlc(
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+
+      _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
+    ),
+};
+
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
