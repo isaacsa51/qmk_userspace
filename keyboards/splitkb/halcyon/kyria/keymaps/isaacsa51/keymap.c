@@ -172,14 +172,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Homerow mods on: ARST NEIO 
  * In this order: CTRL, ALT, GUI, SHIFT
  * 
+ * Declaration:
+ *    - CAPS: Tap dance (1 tap Caps word, 2 taps Caps Lock)
+ * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |  TAB   |   Q  |   W  |   F  |   P  |   B  |                              |   J  |   L  |   U  |   Y  | ;  : |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |  CMD   |   A  |   R  |   S  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   O  | TILDE  |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE|CapsLk|  |F-keys|  WM  |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
+ * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE| CAPS |  |F-keys|  WM  |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter| Space|  SYM | RGUI | Menu |
+ *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter| Space|  SYM | MEH  |HYPER |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -190,7 +193,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
         CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
         KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , DRAG_S ,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                   MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , ADJUST, KC_APP,
+                                   MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
@@ -213,15 +216,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_CANARIA] = LAYOUT_split_3x6_5_hlc(
     KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
-    CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   KC_N ,  KC_E ,   KC_I ,  KC_C , TILDE,
+    CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  KC_C , TILDE,
     KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K , KC_LBRC,KC_CAPS,     FKEYS  ,   WM   , KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                ADJUST, KC_LGUI, KC_LALT, KC_SPC , NAV   ,     SYM    , KC_BSPC,KC_ENTER,KC_RGUI, KC_APP,
+                               MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
     KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
 /*
  * Nav Layer: Media, number & navigation
  *
+ * Declarations:
+ *    - OSHTSF: 1 Tap = One shot shift/ 2 Tap = Hold shift
+ *    - OSHTCT: 1 Tap = One shot Ctrl/ 2 Tap = Hold Ctrl
+ * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |        |      |  7   |   8  |   9  |      |                              | PgUp | Home |   ↑  | End  | VolUp| Delete |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
@@ -229,7 +236,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |      |  1   |   2  |   3  |      |      |ScLck |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      | XXXX |      |      |  |      |      |      |      |      |
+ *                        |      |      | XXXX |      |      |  |      |OSHTSF|OSHTCT|      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -254,7 +261,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |   \  |  `   |  {   |  }   |  +   |      |      |  |      |      |      |  _   |  ,   |  .   |  /   |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      | XXXX |      |      |
+ *                        |      |      |      | DROID|      |  |      |      | XXXX |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -277,7 +284,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |  F5  |  F6  |  F7  |  F8  |      |                              |      | Shift| Ctrl |  Alt |  GUI |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |  F1  |  F2  |  F3  |  F4  |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  F1  |  F2  |  F3  |  F4  |      |      |      |  | XXXX |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -334,7 +341,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |  GUI |  Alt | Ctrl | Shift|      |                              | DIRE | FCW ←| FCW ↓| FCW →| DCH  |  ICH   |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      |      |  W6  |  W7  |  W8  |  W9  |  W10 |        |
+ * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      | XXXX |  W6  |  W7  |  W8  |  W9  |  W10 |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      | FLOAT| SHIFT|  |      | OSHFT|      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -353,15 +360,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /*
  * Android/IntelliJ: Basic shortcouts for JetBrains IDE using Mac for all plugin to match macOS and Windows shortcuts 
- *
+ * 
+ * NOTES: Make sure to backup all shortcuts and preferences using Backup And Sync plugin to handle keymaps alongside MacForAll plugin to override and translate keymap between Mac and Windows
+ * 
+ * Extra Layer toggle:
+ *    - GIT: One Shot for GIT actions for IntelliJ //TODO: Create One shot layer for git actions
+ * 
+ * Declarations:
+ *    - RUN: Run/Compile
+ *    - DEBUG: Debug current project
+ *    - QCKACT: Alt+Enter to quick action selected line
+ *    - NEWFLE: Insert new file/module
+ *    - PRETAB/NXTAB: Previous/Next tab (Ctrl+Shift+[/])
+ *    - FCLWN/FCRWM: Focus left/right window (Ctrl+Alt+Shift+Page Down/Page Up)
+ *    - BRKPNT: Insert/Delete breakpoint (Ctrl+F8)
+ *    - GLDSYN: Gradle Sync (Ctrl+Shift+O)
+ *    - FIND: Find keyword (Ctrl+F)
+ *    - RPLCE: Replace keyword (Ctrl+R)
+ *    - JUMP: Jump to line (this is using AceJump with an override of Project Structure, Ctrl+;)
+ *    - CLOSE: Close tab (Ctrl+W)
+ *    - SWTCHR: Switcher (Ctrl+Tab) // TODO: Make the Ctrl key sticky...
+ *    - IDENT: Indent all file code(Ctrl+Alt+I)
+ *    - RFORMT: Reformat Code (Ctrl+Alt+L)
+ *    - 
+ * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |        | CLOSE|      |      | JUMP |      |                              |      |      |FCLWN |      | FCRWN|        |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |        |      |      | FIND |  RUN | DEBUG|                              |      |QCKACT|NEWFLE| IDENT|      |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        |  GIT |      | RPLCE|GLDSYN|BRKPNT|      |      |  |      |      |      |SWTCHR|PRETAB|RFORMT| NXTAB|        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      | XXXX |      |  |      | XXXX |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -377,19 +407,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
   ),
 };
-
-bool awaiting_smart_tilde = false;
-bool set_scrolling = false;
-
-report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    if (set_scrolling) {
-        mouse_report.h = mouse_report.x;
-        mouse_report.v = mouse_report.y;
-        mouse_report.x = 0;
-        mouse_report.y = 0;
-    }
-    return mouse_report;
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_user_custom(keycode, record)) return false;

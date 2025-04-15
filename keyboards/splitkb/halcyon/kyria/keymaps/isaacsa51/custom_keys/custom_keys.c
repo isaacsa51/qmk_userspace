@@ -1,10 +1,10 @@
+#include "quantum.h"
 #include "custom_keys.h"
 #include "../os_detection/os_layer.h"
-#include "process_keycode/process_tap_dance.h"
-#include "quantum.h"
+#include "pointing_device.h"
 
 static bool awaiting_smart_tilde = false;
-static bool set_scrolling = false;
+static bool scrolling_enabled = false;
 
 // Mapea los homerow mods a sus teclas base
 uint16_t get_base_keycode(uint16_t keycode) {
@@ -20,9 +20,21 @@ uint16_t get_base_keycode(uint16_t keycode) {
         default: return keycode;
     }
 }
+
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    if (scrolling_enabled) {
+        report_mouse_t scroll = {};
+        scroll.h = mouse_report.x;
+        scroll.v = -mouse_report.y; // natural scroll
+        return scroll;
+    }
+    return mouse_report;
+}
+
 bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == DRAG_S && record->event.pressed) {
-        set_scrolling = !set_scrolling;
+
+    if(keycode == DRAG_S && record->event.pressed) {
+        scrolling_enabled = !scrolling_enabled;
         return false;
     }
 

@@ -7,6 +7,7 @@ USER_NAME := halcyon_modules
 SRC += custom_keys/custom_keys.c
 SRC += os_detection/os_layer.c
 SRC += combos/combos.c
+
 # Enable combos
 COMBO_ENABLE = yes
 
