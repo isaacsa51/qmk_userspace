@@ -35,9 +35,13 @@ jobs:
 
       - name: Rename firmware files
         run: |
-          mkdir firmware_out
-          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_display*.uf2 firmware_out/kyria_display.uf2
-          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_trackpad*.uf2 firmware_out/kyria_trackpad.uf2
+          mkdir -p firmware_out
+          ls -la .build
+          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_display*.uf2 firmware_out/kyria_display.uf2 || echo "Kyria Display firmware not found."
+          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_trackpad*.uf2 firmware_out/kyria_trackpad.uf2 || echo "Kyria Trackpad firmware not found."
+
+      - name: Debug: List firmware_out directory
+        run: ls -la firmware_out
 
       - name: Upload Kyria Display Firmware
         uses: actions/upload-artifact@v3
