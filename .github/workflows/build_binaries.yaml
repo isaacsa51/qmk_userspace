@@ -44,13 +44,13 @@ jobs:
         run: ls -la firmware_out
 
       - name: Upload Kyria Display Firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: kyria_display_firmware
           path: firmware_out/kyria_display.uf2
 
       - name: Upload Kyria Trackpad Firmware
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: kyria_trackpad_firmware
           path: firmware_out/kyria_trackpad.uf2
