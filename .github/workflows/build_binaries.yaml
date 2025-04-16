@@ -40,13 +40,11 @@ jobs:
           cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_trackpad*.uf2 firmware_out/kyria_trackpad.uf2
 
       - name: Upload Kyria Display Firmware
-        uses: actions/upload-artifact@v3.1.3
         with:
           name: kyria_display_firmware
           path: firmware_out/kyria_display.uf2
 
       - name: Upload Kyria Trackpad Firmware
-        uses: actions/upload-artifact@v3.1.3
         with:
           name: kyria_trackpad_firmware
           path: firmware_out/kyria_trackpad.uf2
