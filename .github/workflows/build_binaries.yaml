@@ -40,7 +40,7 @@ jobs:
           cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_display*.uf2 firmware_out/kyria_display.uf2 || echo "Kyria Display firmware not found."
           cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_trackpad*.uf2 firmware_out/kyria_trackpad.uf2 || echo "Kyria Trackpad firmware not found."
 
-      - name: Debug: List firmware_out directory
+      - name: Debug List firmware_out directory
         run: ls -la firmware_out
 
       - name: Upload Kyria Display Firmware
