@@ -7,14 +7,52 @@ permissions:
 
 jobs:
   build:
-    name: 'QMK Userspace Build'
-    uses: qmk/.github/.github/workflows/qmk_userspace_build.yml@main
-    with:
-      qmk_repo: splitkb/vial-qmk
-      qmk_ref: halcyon
+    runs-on: ubuntu-latest
+    name: Build Both Halves
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install QMK
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install qmk
+          qmk setup -y
+          qmk doctor
+
+      - name: Compile Kyria Display Half
+        run: |
+          qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_TFT_DISPLAY=1 -e TARGET=kyria_display
+
+      - name: Compile Kyria Trackpad Half
+        run: |
+          qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_CIRQUE_TRACKPAD=1 -e TARGET=kyria_trackpad
+
+      - name: Rename firmware files
+        run: |
+          mkdir firmware_out
+          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_display*.uf2 firmware_out/kyria_display.uf2
+          cp .build/splitkb_halcyon_kyria_rev4_isaacsa51_kyria_trackpad*.uf2 firmware_out/kyria_trackpad.uf2
+
+      - name: Upload Kyria Display Firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: kyria_display_firmware
+          path: firmware_out/kyria_display.uf2
+
+      - name: Upload Kyria Trackpad Firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: kyria_trackpad_firmware
+          path: firmware_out/kyria_trackpad.uf2
 
   publish:
     name: 'QMK Userspace Publish'
-    uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@main
     if: always() && !cancelled()
     needs: build
+    uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@main
