@@ -78,17 +78,7 @@
 #include "custom_keys/custom_keys.h"
 #include "combos/combos.h"
 #include "os_detection/os_layer.h"
-
-enum layers {
-    _ALPHA = 0,
-    _CANARIA,
-    _NAV,
-    _SYM,
-    _FUNCTION,
-    _ADJUST,
-    _WM,
-    _DROID,
-};
+#include "layers.h"
 
 // Aliases for readability
 #define ALPHA   DF(_ALPHA)
@@ -100,6 +90,7 @@ enum layers {
 #define ADJUST   TT(_ADJUST)
 #define WM       TT(_WM)
 #define DROID    TT(_DROID)
+#define GIT      OSL(_GIT)
 
 // Homerow mods
 #define HM_A LCTL_T(KC_A)
@@ -272,7 +263,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______ , KC_AMPR, KC_DLR , KC_LBRC, KC_RBRC, KC_PERC,                                     _______,  KC_DQT, KC_LABK, KC_RABK, _______, _______,
     KC_TILD , KC_EXLM,  KC_AT , KC_LPRN, KC_RPRN, KC_PIPE,                                     KC_CIRC, KC_MINS, KC_ASTR, KC_COLN, KC_HASH, _______,
     _______ , KC_BSLS, KC_GRV , KC_LCBR, KC_RCBR, KC_PLUS, _______, _______, _______, _______, _______, KC_UNDS, KC_COMM,  KC_DOT, KC_SLSH, _______,
-                                _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                                _______, _______, _______,MO(DROID), _______, _______, _______, _______, _______, _______,
     _______, _______,  _______, _______, _______,                                                       _______, _______, _______, _______, _______
     ),
 
@@ -341,7 +332,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |  GUI |  Alt | Ctrl | Shift|      |                              | DIRE | FCW ←| FCW ↓| FCW →| DCH  |  ICH   |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      | XXXX |  W6  |  W7  |  W8  |  W9  |  W10 |        |
+ * |        |  W1  |  W2  |  W3  |  W4  |  W5  |      |      |  |      | XXXX |  W6  |  W7  |  W8  |  W9  | W10  |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      |      | FLOAT| SHIFT|  |      | OSHFT|      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -367,11 +358,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *    - GIT: One Shot for GIT actions for IntelliJ //TODO: Create One shot layer for git actions
  * 
  * Declarations:
- *    - RUN: Run/Compile
- *    - DEBUG: Debug current project
+ *    - RUN: Run/Compile (Control+Alt+R)
+ *    - DEBUG: Debug current project (Control+Alt+D)
  *    - QCKACT: Alt+Enter to quick action selected line
- *    - NEWFLE: Insert new file/module
- *    - PRETAB/NXTAB: Previous/Next tab (Ctrl+Shift+[/])
+ *    - NEWFLE: Insert new file/module (Control+Alt+N)
+ *    - PRETAB/NXTAB: Previous/Next tab (Ctrl+Shift+ [ or ])
  *    - FCLWN/FCRWM: Focus left/right window (Ctrl+Alt+Shift+Page Down/Page Up)
  *    - BRKPNT: Insert/Delete breakpoint (Ctrl+F8)
  *    - GLDSYN: Gradle Sync (Ctrl+Shift+O)
@@ -382,11 +373,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *    - SWTCHR: Switcher (Ctrl+Tab) // TODO: Make the Ctrl key sticky...
  *    - IDENT: Indent all file code(Ctrl+Alt+I)
  *    - RFORMT: Reformat Code (Ctrl+Alt+L)
- *    - RFACTR: Refactor this...
- *    - SEARCH: Search everywhere
+ *    - RFACTR: Refactor this... 
+ *    - SEARCH: Search everywhere (Double shift)
  * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        | CLOSE|      |      | JUMP |      |                              |      |RFACTR|FCLWN |      | FCRWN|        |
+ * |        |      |      |      | JUMP | CLOSE|                              |      |RFACTR|FCLWN |      | FCRWN|        |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |      |      | FIND |  RUN | DEBUG|                              |SEARCH|QCKACT|NEWFLE| IDENT|      |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
@@ -400,9 +391,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_DROID] = LAYOUT_split_3x6_5_hlc(
-    _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, JUMP   , CLOSE  ,                                     _______, _______, FCLWN  , _______, FCRWN  , _______,
+    _______, _______, _______, FIND   , RUN    , DEBUG  ,                                     SEARCH , QCKACT , NEWFLE , IDENT  , _______, _______,
+    _______,OSL(_GIT),_______, RPLCE  , GLDSYN , BRKPNT , _______, _______, _______, _______, _______, SWTCHR , PRETAB , RFORMT , NXTAB  , _______,
                                _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
     _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
@@ -411,32 +402,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
  * Git: This layer is focused to work only on any IntelliJ IDE
  *
- * Notes: Each keybind name is what command should run for any git command
+ * Notes: Each keybind name is what command should run for any git command. This layer is only activated from the DROID layer
+ * 
+ * Declarations:
+ *    - PULL: Ctrl+Shift+Alt+T
+ *    - PUSH: Ctrl+Shift+K
+ *    - NWBRCH: Ctrl+Alt+N (New branch)
+ *    - SHELVE: Ctrl+Shift+H
+ *    - RLLBCK: Ctrl+Alt+Z (Rollback)
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+ * |        |      |      |      |      |      |                              |      |      |      |      |      |   ESC  |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |      |      | PUSH | PULL |      |                              |      |NWBRCH|SHELVE|      |      |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |      |      |RLLBCK|      |      |      |  |      |      |      |      |      |      |      |        |
+ * |        | XXXX |      |      |RLLBCK|      |      |      |  |      |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      | XXXX |      |  |      | XXXX |      |      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
  * |      |      |       |      |      |                                              |      |      |       |      |      |
  * `-----------------------------------'                                              `-----------------------------------'
  */
-    [_LAYERINDEX] = LAYOUT_split_3x6_5_hlc(
-      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+    [_GIT] = LAYOUT_split_3x6_5_hlc(
+      _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______,  KC_ESC,
       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
 
       _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
     ),
-};
-
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
