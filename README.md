@@ -1,95 +1,145 @@
-# Splitkb QMK Userspace
+# Isaac's QMK Userspace
 
-This is the splitkb userspace repository which allows for an external set of QMK keymaps with halcyon modules to be defined and compiled. This is useful for users who want to maintain their own keymaps without having to fork the splitkb QMK or vial repository.
+**Current info on how to compile and info regarding the halcyon modules are within the `halcyon` branch.**
 
-If you want to compile firmware without any modules you can also use the [main qmk_userspace repo](https://github.com/qmk/qmk_userspace).
+> Un keymap pensado para desarrollo productivo, navegación eficiente, y atajos personalizados para entornos como GlazeWM, IntelliJ IDEA y Android Studio, con un enfoque modular y multicapa.
 
-If the keyboard has not been merged yet to the main branch of QMK you may need to edit the workflow, for that see [Extra info](#extra-info)
+## Requisitos
 
-## Howto configure your build targets
+Este keymap utiliza características avanzadas de QMK y requiere las siguientes herramientas para sacarle el máximo provecho:
 
-1. Run the normal `qmk setup` procedure if you haven't already done so -- see [QMK Docs](https://docs.qmk.fm/#/newbs) for details.
-1. Fork this repository
-1. If you have already forked the `qmk/qmk_userspace` repository before you can add this repository manually following the [steps below](#adding-splitkb-fork-to-an-existing-fork).
-1. Clone your fork to your local machine
-1. Enable userspace in QMK config using `qmk config user.overlay_dir="$(realpath qmk_userspace)"`
-1. Add a new keymap for your board by copy, pasting and renaming the `default_hlc` keymap within the `keyboards/splitkb/halcyon/$KB$/keymaps` folder.
-1. You may want to replace the `qmk.json` with the empty `qmk_empty.json` if you want to start from scratch as it will otherwise compile all default options.
-1. Add your keymap(s) to the build by running `qmk userspace-add -kb <your_keyboard> -km <your_keymap> -e <halcyon_module>=1 -e TARGET=<filename>`.
-    * This will automatically update your `qmk.json` file
-    * Corresponding `qmk userspace-remove -kb <your_keyboard> -km <your_keymap> -e <halcyon_module>=1 -e TARGET=<filename>`.
-    * Listing the build targets can be done with with `qmk userspace-list`
-    * If you want to use a module:
-        * For the filename make it so you can differentiate between the different firmwares for the modules. `kyria_rev4_default_encoder` for example.
-        * The following options are available for the halcyon modules:
-            * HLC_NONE, If you don't have a module installed but you do have a module on the other half.
-            * HLC_ENCODER, If you have an encoder module installed.
-            * HLC_TFT_DISPLAY, If you have a tft rgb display installed.
-            * HLC_CIRQUE_TRACKPAD, If you have a Cirque trackpad installed.
-1. Commit your changes
+- [QMK Firmware](https://github.com/qmk/qmk_firmware)
+- [GlazeWM](https://github.com/larsenwork/GlazeWM) o [AeroSpace](https://github.com/aerospacewm/aerospace) – para gestión de ventanas tipo tiling.
+- [MacForAll plugin (JetBrains)](https://plugins.jetbrains.com/plugin/19844-macforall) – permite usar keybindings estilo macOS en Windows.
+- [Backup and Sync (JetBrains)](https://plugins.jetbrains.com/plugin/10458-settings-repository) – para sincronizar preferencias y atajos.
 
+---
 
-## Howto build with GitHub
+## Comandos de compilación actuales
 
-1. In the GitHub Actions tab, enable workflows
-1. Push your changes above to your forked GitHub repository
-1. Look at the GitHub Actions for a new actions run
-1. Wait for the actions run to complete
-1. Inspect the Releases tab on your repository for the latest firmware build
+Para compilar cada mitad del teclado con configuraciones específicas:
 
+```bash
+# Módulo izquierdo con pantalla TFT
+qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_TFT_DISPLAY=1 -e TARGET=kyria_display
 
-## Howto build locally
-
-1. Run the normal `qmk setup` procedure if you haven't already done so -- see [QMK Docs](https://docs.qmk.fm/#/newbs) for details.
-1. Fork this repository
-1. Clone your fork to your local machine
-1. `cd` into this repository's clone directory
-1. Set global userspace path: `qmk config user.overlay_dir="$(realpath .)"` -- you MUST be located in the cloned userspace location for this to work correctly
-    * This will be automatically detected if you've `cd`ed into your userspace repository, but the above makes your userspace available regardless of your shell location.
-1. Compile normally: `qmk compile -kb your_keyboard -km your_keymap -e <your_module>=1 -e TARGET=<filename>` or `make your_keyboard:your_keymap -e <your_module>=1 -e TARGET=<filename>`
-
-Alternatively, if you configured your build targets above, you can use `qmk userspace-compile` to build all of your userspace targets at once.
-
-
-## Extra info
-
-If you wish to point GitHub actions to a different repository, a different branch, or even a different keymap name, you can modify `.github/workflows/build_binaries.yml` to suit your needs.
-
-To override the `build` job, you can change the following parameters to use a different QMK repository or branch, this can be useful if you want to use a the main QMK repository or a different vial branch. For example:
+# Módulo derecho con trackpad Cirque
+qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_CIRQUE_TRACKPAD=1 -e TARGET=kyria_trackpad
 ```
-    with:
-      qmk_repo: qmk/qmk_firmware
-      qmk_ref: master
-```
-Our halcyon module code should work fine with the main QMK repository but it may break if there are any breaking changes from QMK in the future. We will try our best to keep this repository up-to-date.
 
-If you wish to manually manage `qmk_firmware` using git within the userspace repository, you can add `qmk_firmware` as a submodule in the userspace directory instead. GitHub Actions will automatically use the submodule at the pinned revision if it exists, otherwise it will use the default latest revision of `qmk_firmware` from the main repository. This will not work when using vial.
+## Capas y propósito
 
-This can also be used to control which fork is used.
+El keymap se organiza por capas temáticas con una clara intención funcional y de contexto de uso:
 
-1. (First time only) `git submodule add https://github.com/qmk/qmk_firmware.git`
-1. (To update) `git submodule update --init --recursive`
-1. Commit your changes to your userspace repository
+#### ALPHA (Base - Colemak DH)
 
+Layout principal.
 
-## Adding splitkb fork to an existing fork
+- Mods en la fila central (ARST NEIO): Ctrl, Alt, GUI, Shift.
+- Tap Dance: Caps Word (1 toque) / Caps Lock (2 toques).
+- Combinaciones (Combos) para símbolos y operadores frecuentes.
 
-### New branch
+#### CANARIA (Alternativo)
 
-If you have already forked the qmk/qmk_userspace repository before you may need to manually add the `halcyon` branch.
+- Variante basada en Canaria Layout.
+- A-C Swapped para mayor comodidad.
+- Mismo esquema de mods en home row.
 
-1. Add a new upstream `git remote add upstream https://github.com/splitkb/qmk_userspace.git`
-1. Fetch the upstream `git fetch upstream`
-1. Create a new branch based on the upstream `git checkout -b halcyon upstream/halcyon`
-1. Make any changes you want and push it to github `git push -u origin halcyon`
+#### NAV (Navegación y Multimedia)
+- Números, teclas de navegación (flechas, inicio/fin) y control de medios.
+- Comodines de One Shot y Tap Dance para Shift y Ctrl.
 
-### Existing branch
+#### SYM (Símbolos)
 
-You may also want to just add the files to your own branch if you have already setup a custom userspace before.
+- No todos los simbolos se encuentran dentro de esta capa ya que varios de ellos son más fáciles de acceder mediante combos.
 
-1. Clone or download the files from our fork or add it as a new branch as above.
-1. Copy over the contents of `users/halcyon_modules/rules.mk` and the `users/halcyon_modules/splitkb/` folder to your personal user folder.
+#### FUNCTION (Funciones)
 
-If you want to modify an existing keymap (from the original Kyria, Elora or an Aurora board for example). Make sure to add 10 new keys in your keymap (Look at `keyboards/splitkb/halcyon/kyria/keymaps/default_hlc` for an example).
+- Teclas F1-F12
+- Entrada a la capa ADJUST.
 
-Do note that we use some quantum functions in our userspace so there may be a conflict when compiling. If you use the `_user` functions you should be fine.
+#### ADJUST (Ajustes y RGB)
+
+- Cambio de layout por defecto (_ALPHA, _CANARIA).
+- Control de iluminación RGB: brillo, tono, saturación, efectos.
+
+#### WM (Window Manager)
+
+- Atajos para gestionar ventanas en GlazeWM o AeroSpace.
+- Movimiento entre ventanas, cambio de layout, y acceso rápido a apps.
+- Incluye One Shot Shift para reducir combinaciones simultáneas.
+
+#### DROID (Android / JetBrains IDEs)
+
+-  Pensado para desarrollo con IntelliJ y Android Studio.
+
+- Incluye atajos como:
+
+    1. RUN: Ejecutar proyecto (Ctrl+Alt+R)
+
+    1. DEBUG: Iniciar depuración (Ctrl+Alt+D)
+
+    1. QCKACT: Acción rápida (Alt+Enter)
+
+    1. NEWFLE: Nuevo archivo/módulo
+
+    1. GLDSYN: Sincronización de Gradle (Ctrl+Shift+O)
+
+    1. BRKPNT: Breakpoints (Ctrl+F8)
+
+    1. Navegación entre tabs y ventanas (Ctrl+Shift+[, Ctrl+Alt+Shift+PgDn)
+
+#### GIT (One-Shot Layer - Git)
+
+> [!WARNING]  
+> Capa momentánea para acciones Git: commit, push, rebase, stash, etc.
+> Ideal para integrarse en flujos IntelliJ.
+
+## Combos
+
+Optimización mediante Combos para símbolos frecuentes, como:
+
+| Teclas Involucradas       | Resultado |
+|---------------------------|-----------|
+| S + T                     | `=`       |
+| N + U                     | `?`       |
+| W + F                     | `[`       |
+| F + P                     | `]`       |
+| R + S                     | `-`       |
+| X + C                     | `{`       |
+| C + D                     | `}`       |
+| T + G                     | `+`       |
+| W + R                     | `@`       |
+| S + D                     | `_`       |
+| L + U                     | `(`       |
+| U + Y                     | `)`       |
+| N + E                     | `:`       |
+| M + N                     | `|`       |
+| H + ,                     | `<`       |
+| , + .                     | `>`       |
+| E + I                     | `"`       |
+| U + E                     | `*`       |
+| E + .                     | `\`       |
+| J + M                     | `^`       |
+| F + T                     | `!`       |
+| T + P                     | `$`       |
+| F + S                     | `#`       |
+
+## Filosofía
+
+Modularidad: Separación clara por contexto: navegación, símbolos, macros, ajustes, ventanas, desarrollo.
+
+Portabilidad: Funciona tanto en macOS como Windows con detección de sistema y ajustes contextuales (TG_OS).
+
+Eficiencia: Home row mods, One Shot Layers, Combos, y Thumb Cluster bien aprovechado.
+
+Enfoque Dev/Productividad: Capa entera para atajos de desarrollo, shortcuts de tiling, y movimientos rápidos.
+
+## Pendientes
+1. Migrar combos a archivo separado.
+
+2. Completar la capa _GIT.
+
+3. Añadir documentación visual (diagrama por capa).
+
+4. Hacer funcionar la tecla DRAG_S
