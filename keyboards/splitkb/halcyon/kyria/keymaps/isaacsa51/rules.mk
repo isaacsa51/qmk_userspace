@@ -12,3 +12,5 @@ SRC += combos/combos.c
 COMBO_ENABLE = yes
 
 LAYER_LOCK_ENABLE = yes
+
+POINTING_DEVICE_ENABLE = yes

@@ -1,12 +1,20 @@
 #include "quantum.h"
+#include "pointing_device.h"
 #include "custom_keys.h"
 #include "../os_detection/os_layer.h"
-#include "pointing_device.h"
 #include "../layers.h"
+
+// Modify these values to adjust the scrolling speed
+#define SCROLL_DIVISOR_H 8.0
+#define SCROLL_DIVISOR_V 8.0
+
+// Variables to store accumulated scroll values
+float scroll_accumulated_h = 0;
+float scroll_accumulated_v = 0;
 
 static bool awaiting_smart_tilde = false;
 static bool scrolling_enabled = false;
-static bool ctrltab_sticky_active = false;
+static bool ctrl_sticky_active = false;
 
 // Mapea los homerow mods a sus teclas base
 uint16_t get_base_keycode(uint16_t keycode) {
@@ -24,11 +32,23 @@ uint16_t get_base_keycode(uint16_t keycode) {
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    // Check if drag scrolling is active
     if (scrolling_enabled) {
-        report_mouse_t scroll = {};
-        scroll.h = mouse_report.x;
-        scroll.v = -mouse_report.y; // natural scroll
-        return scroll;
+        // Calculate and accumulate scroll values based on mouse movement and divisors
+        scroll_accumulated_h += (float)mouse_report.x / SCROLL_DIVISOR_H;
+        scroll_accumulated_v += (float)mouse_report.y / SCROLL_DIVISOR_V;
+
+        // Assign integer parts of accumulated scroll values to the mouse report
+        mouse_report.h = (int8_t)scroll_accumulated_h;
+        mouse_report.v = (int8_t)scroll_accumulated_v;
+
+        // Update accumulated scroll values by subtracting the integer parts
+        scroll_accumulated_h -= (int8_t)scroll_accumulated_h;
+        scroll_accumulated_v -= (int8_t)scroll_accumulated_v;
+
+        // Clear the X and Y values of the mouse report
+        mouse_report.x = 0;
+        mouse_report.y = 0;
     }
     return mouse_report;
 }
@@ -50,14 +70,19 @@ bool is_ignorable_key(uint16_t keycode) {
 bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
     if (record->event.pressed) {
-        if (ctrltab_sticky_active && keycode != SWTCHR && record->event.pressed && !is_ignorable_key(keycode)){
+        if (
+            ctrl_sticky_active &&
+            get_base_keycode(keycode) != get_base_keycode(SWTCHR) &&
+            record->event.pressed &&
+            !is_ignorable_key(keycode)
+        ) {
             unregister_code(KC_LCTL);
-            ctrltab_sticky_active = false;
+            ctrl_sticky_active = false;
         }
 
         switch (keycode) {
             case DRAG_S:
-                scrolling_enabled = !scrolling_enabled;
+                scrolling_enabled = record->event.pressed;
                 return false;
 
             case TILDE:
@@ -138,8 +163,8 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
             case SWTCHR:
                 register_code(KC_LCTL);     // Presiona Ctrl
-                register_code(KC_TAB);           // Tab
-                ctrltab_sticky_active = true;  // Activa el "sticky"
+                tap_code(KC_TAB);           // Tab
+                ctrl_sticky_active = true;  // Activa el "sticky"
                 return false;
 
             case IDENT:
@@ -220,4 +245,12 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
     }    
 
     return true;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    // Comenta o ajusta esta parte si no tienes esta capa definida
+    // if (get_highest_layer(state) != AUTO_MOUSE_DEFAULT_LAYER) {
+    //     set_scrolling = false;
+    // }
+    return state;
 }
