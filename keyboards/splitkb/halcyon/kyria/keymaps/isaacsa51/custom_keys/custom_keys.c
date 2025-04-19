@@ -5,15 +5,17 @@
 #include "../layers.h"
 
 // Modify these values to adjust the scrolling speed
-#define SCROLL_DIVISOR_H 8.0
-#define SCROLL_DIVISOR_V 8.0
+#define SCROLL_DIVISOR_H 16.0
+#define SCROLL_DIVISOR_V 16.0
 
 // Variables to store accumulated scroll values
-float scroll_accumulated_h = 0;
-float scroll_accumulated_v = 0;
+float scroll_left_accumulated_h = 0;
+float scroll_left_accumulated_v = 0;
+float scroll_right_accumulated_h = 0;
+float scroll_right_accumulated_v = 0;
 
+bool set_scrolling = false;
 static bool awaiting_smart_tilde = false;
-static bool scrolling_enabled = false;
 static bool ctrl_sticky_active = false;
 
 // Mapea los homerow mods a sus teclas base
@@ -29,28 +31,6 @@ uint16_t get_base_keycode(uint16_t keycode) {
         case LCTL_T(KC_O): return KC_O;
         default: return keycode;
     }
-}
-
-report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    // Check if drag scrolling is active
-    if (scrolling_enabled) {
-        // Calculate and accumulate scroll values based on mouse movement and divisors
-        scroll_accumulated_h += (float)mouse_report.x / SCROLL_DIVISOR_H;
-        scroll_accumulated_v += (float)mouse_report.y / SCROLL_DIVISOR_V;
-
-        // Assign integer parts of accumulated scroll values to the mouse report
-        mouse_report.h = (int8_t)scroll_accumulated_h;
-        mouse_report.v = (int8_t)scroll_accumulated_v;
-
-        // Update accumulated scroll values by subtracting the integer parts
-        scroll_accumulated_h -= (int8_t)scroll_accumulated_h;
-        scroll_accumulated_v -= (int8_t)scroll_accumulated_v;
-
-        // Clear the X and Y values of the mouse report
-        mouse_report.x = 0;
-        mouse_report.y = 0;
-    }
-    return mouse_report;
 }
 
 bool is_ignorable_key(uint16_t keycode) {
@@ -82,7 +62,7 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
         switch (keycode) {
             case DRAG_S:
-                scrolling_enabled = record->event.pressed;
+                set_scrolling = record->event.pressed;
                 return false;
 
             case TILDE:
@@ -247,10 +227,63 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, report_mouse_t right_report) {
+    // Check if drag scrolling is active
+    if (set_scrolling) {
+      // Calculate and accumulate scroll values based on mouse movement and divisors
+      scroll_left_accumulated_h += (float)left_report.x / SCROLL_DIVISOR_H;
+      scroll_left_accumulated_v += (float)left_report.y / SCROLL_DIVISOR_V;
+      scroll_right_accumulated_h += (float)right_report.x / SCROLL_DIVISOR_H;
+      scroll_right_accumulated_v += (float)right_report.y / SCROLL_DIVISOR_V;
+  
+      // Assign integer parts of accumulated scroll values to the mouse report
+      left_report.h = (int16_t)scroll_left_accumulated_h;
+      left_report.v = (int16_t)scroll_left_accumulated_v;
+      right_report.h = (int16_t)scroll_right_accumulated_h;
+      right_report.v = (int16_t)scroll_right_accumulated_v;
+  
+      // Update accumulated scroll values by subtracting the integer parts
+      scroll_left_accumulated_h -= (int16_t)scroll_left_accumulated_h;
+      scroll_left_accumulated_v -= (int16_t)scroll_left_accumulated_v;
+      scroll_right_accumulated_h -= (int16_t)scroll_right_accumulated_h;
+      scroll_right_accumulated_v -= (int16_t)scroll_right_accumulated_v;
+  
+      // Clear the X and Y values of the mouse report
+      left_report.x = 0;
+      left_report.y = 0;
+      right_report.x = 0;
+      right_report.y = 0;
+    }
+    return pointing_device_combine_reports(left_report, right_report);
+}
+
+void dance_cmd_finished(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        // Tap simple: registrar CMD según el OS
+        register_code(current_os == OS_MAC ? KC_LGUI : KC_LCTL);
+    } else if (state->count == 2) {
+        // Double tap: activar modo tilde inteligente
+        awaiting_smart_tilde = true;
+    }
+}
+
+void dance_cmd_reset(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        // Soltar CMD
+        unregister_code(current_os == OS_MAC ? KC_LGUI : KC_LCTL);
+    }
+}
+
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Comenta o ajusta esta parte si no tienes esta capa definida
-    // if (get_highest_layer(state) != AUTO_MOUSE_DEFAULT_LAYER) {
-    //     set_scrolling = false;
-    // }
+    switch(get_highest_layer(state)) {
+      case _NAV:
+        set_scrolling = true;
+      break;
+      default:
+        if (set_scrolling) {
+          set_scrolling = false;
+        }
+      break;
+    }
     return state;
 }

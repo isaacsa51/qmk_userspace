@@ -104,6 +104,11 @@
 
 // Aliases for One Shot mods keys
 #define OSHFT    OSM(MOD_LSFT)
+#define OALT     OSM(MOD_LALT)
+
+// Aliases for tap dance
+#define MOUSE    TD(TD_MOUSE)
+#define TDCMD    TD(TD_CMD_TILDE)
 
 // TODO: Migrate these combos to combos.c
 const uint16_t PROGMEM question_combo[] = {HM_N, KC_U, COMBO_END};
@@ -156,6 +161,12 @@ combo_t key_combos[] = {
     COMBO(combo_hash,       KC_HASH),  // #
 };
 
+tap_dance_action_t tap_dance_actions[] = {
+  // Tap once for LMB, twice for RMB
+  [TD_MOUSE] = ACTION_TAP_DANCE_DOUBLE(MS_BTN1, MS_BTN2),
+  [TD_CMD_TILDE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_cmd_finished, dance_cmd_reset),
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /*
  * Base Layer: Colemak DH
@@ -165,15 +176,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * 
  * Declaration:
  *    - CAPS: Tap dance (1 tap Caps word, 2 taps Caps Lock)
+ *    - ALT: One shot at thumb level
+ *    - DRAGS: Drag Scroll for trackpad, press to use trackpad to scroll instead of moving mouse // TODO!
  * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |  TAB   |   Q  |   W  |   F  |   P  |   B  |                              |   J  |   L  |   U  |   Y  | ;  : |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |  CMD   |   A  |   R  |   S  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   O  | TILDE  |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Z  |   X  |   C  |   D  |   V  | MOUSE| CAPS |  |F-keys|  WM  |   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
+ * | LShift |   Z  |   X  |   C  |   D  |   V  |  ALT | CAPS |  |F-keys| DRAGS|   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter| Space|  SYM | MEH  |HYPER |
+ *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter|Bckspc|  SYM | MEH  |HYPER |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -182,9 +195,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_ALPHA] = LAYOUT_split_3x6_5_hlc(
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
-        CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
-        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , DRAG_S ,KC_CAPS,     FKEYS  ,      WM, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                                   MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
+        TDCMD   , HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
+        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , OALT   ,  KC_CAPS,     FKEYS, DRAG_S , KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+                                     MOUSE,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
@@ -207,7 +220,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
     [_CANARIA] = LAYOUT_split_3x6_5_hlc(
     KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
-    CMD ,     HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  KC_C , TILDE,
+    TDCMD   , HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  KC_C , TILDE,
     KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K , KC_LBRC,KC_CAPS,     FKEYS  ,   WM   , KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
                                MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
     KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
@@ -225,7 +238,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |      |  4   |   5  |   6  |  0   |                              | PgDn |  ←   |   ↓  |   →  | VolDn| Insert |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |  1   |   2  |   3  |      |      |ScLck |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
+ * |        |      |  1   |   2  |   3  |      |      |      |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      | XXXX |      |      |  |      |OSHTSF|OSHTCT|      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |

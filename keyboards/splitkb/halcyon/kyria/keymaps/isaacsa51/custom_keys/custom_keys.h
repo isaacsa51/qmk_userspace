@@ -1,14 +1,20 @@
 #pragma once
 #include QMK_KEYBOARD_H
 
+enum {
+    TD_MOUSE,
+    TD_CMD_TILDE,
+    TD_COUNT
+};
+
 enum custom_keycodes {
-    TILDE,
+    TILDE = SAFE_RANGE,
     TG_OS,
     CMD,
     DRAG_S,
     DEL_LINE,
 
-    GIT = SAFE_RANGE,    // One-shot layer for GIT actions
+    GIT,    // One-shot layer for GIT actions
 
     // IntelliJ actions
     RUN,       // Ctrl+Alt+R
@@ -28,10 +34,9 @@ enum custom_keycodes {
     SWTCHR,    // Ctrl+Tab
     IDENT,     // Ctrl+Alt+I
     RFORMT,    // Ctrl+Alt+L
-    RFACTR,    // Refactor this (typically Ctrl+Alt+Shift+T or similar)
-    SEARCH,    // Double Shift (can simulate with shift + tap shift quickly)
+    RFACTR,    // Refactor this
+    SEARCH     // Double Shift
 };
 
 bool process_record_user_custom(uint16_t keycode, keyrecord_t *record);
-
 uint16_t get_base_keycode(uint16_t keycode);
