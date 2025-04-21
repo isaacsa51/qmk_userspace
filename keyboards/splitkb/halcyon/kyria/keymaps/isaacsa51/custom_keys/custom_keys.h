@@ -4,6 +4,9 @@
 enum {
     TD_MOUSE,
     TD_CMD_TILDE,
+    TD_OSHTSF,
+    TD_OSHTCT,
+    TD_CAPS,
     TD_COUNT
 };
 

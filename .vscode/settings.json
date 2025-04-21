@@ -3,6 +3,8 @@
     "files.associations": {
         "os_layer.h": "c",
         "combos.h": "c",
-        "custom_keys.h": "c"
+        "custom_keys.h": "c",
+        "td_declarations.h": "c",
+        "layers.h": "c"
     }
 }

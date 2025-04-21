@@ -15,7 +15,7 @@ float scroll_right_accumulated_h = 0;
 float scroll_right_accumulated_v = 0;
 
 bool set_scrolling = false;
-static bool awaiting_smart_tilde = false;
+bool awaiting_smart_tilde = false;
 static bool ctrl_sticky_active = false;
 
 // Mapea los homerow mods a sus teclas base
@@ -255,23 +255,6 @@ report_mouse_t pointing_device_task_combined_user(report_mouse_t left_report, re
       right_report.y = 0;
     }
     return pointing_device_combine_reports(left_report, right_report);
-}
-
-void dance_cmd_finished(qk_tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1) {
-        // Tap simple: registrar CMD según el OS
-        register_code(current_os == OS_MAC ? KC_LGUI : KC_LCTL);
-    } else if (state->count == 2) {
-        // Double tap: activar modo tilde inteligente
-        awaiting_smart_tilde = true;
-    }
-}
-
-void dance_cmd_reset(qk_tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1) {
-        // Soltar CMD
-        unregister_code(current_os == OS_MAC ? KC_LGUI : KC_LCTL);
-    }
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {

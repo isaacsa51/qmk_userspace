@@ -7,6 +7,7 @@ USER_NAME := halcyon_modules
 SRC += custom_keys/custom_keys.c
 SRC += os_detection/os_layer.c
 SRC += combos/combos.c
+SRC += tap_dance/td_declarations.c
 
 # Enable combos
 COMBO_ENABLE = yes
@@ -16,3 +17,5 @@ LAYER_LOCK_ENABLE = yes
 POINTING_DEVICE_ENABLE = yes
 
 TAP_DANCE_ENABLE = yes
+
+CAPS_WORD_ENABLE = yes

@@ -14,13 +14,13 @@
     /_/ |_\__, /_/  /_/\__,_/              
          /____/                            
 
-    Halcyon Kyria from SplitKB.com (created by Isaac Serrano)
+    Halcyon Kyria from SplitKB.com (keymap by Isaac Serrano)
     =====================================================
 
     [ Features ]
      ¯¯¯¯¯¯¯¯¯¯
     - Target user: spanish software developer using a Windows computer with a MacOS as working laptop
-    - Shotcuts are OS independent, which means they are translated into different key combinations
+    - Shortcuts are OS independent, which means they are translated into different key combinations
       according to the selected OS mode (Windows by default).
     - Custom per-key RGB themes and notifications. Online theme editor: https://codepen.io/alvaro-prieto/full/gOLrwKm
     - Modifier keys can behave as modifiers (if they are operated in conjunction with other keys),
@@ -40,30 +40,18 @@
     - Developed for Halcyon Kyria Rev. 4 (Screen + Cirque Trackpad)
 
     [ Todo ]
-     ¯¯¯¯¯¯¯¯¯¯
+     ¯¯¯¯¯¯
     - Add rgb lighting depending on the current layer.
-
-
 
     [ Settings ]
      ¯¯¯¯¯¯¯¯¯¯
-    - Check notes.txt in order to apply some minor modifications to your QMK if you want to compile this source.
     - QMK version keymap was released at April 4, 2025.
     - Check config.h for required keyboard ID specification to mimic a real Apple keyboard
-    - Some modifications where made to Tap Dance source code and and rgb matrix state. Read notes.txt for further info
     - Some shortcuts have not an equivalence in different OS.
-    - In macOS settings -> keyboard. Disable: "Use F1, F2 , etc. keys as standard function keys"
     - In macOS, window management is managed using AeroSpace, a tiling WM
     - In Windows, same as MacOS, window management is managed by GlazeWM.
     - This keyboard is pretending to be used using the keyboard layout of: English (US - International)
     - Some shortcuts / outputs, might require third party software.
-
-    [ External software dependent features ]
-     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    - Per-app hyper shortcuts
-    - Split screen features in macOs
-    - Lines (key output)
-    - Moving APP to certain desktop
 
    [ Dev tips ]
     ¯¯¯¯¯¯¯¯¯¯
@@ -78,11 +66,13 @@
 #include "custom_keys/custom_keys.h"
 #include "combos/combos.h"
 #include "os_detection/os_layer.h"
+#include "tap_dance/td_declarations.h"
 #include "layers.h"
 
 // Aliases for readability
 #define ALPHA   DF(_ALPHA)
 #define CANARIA DF(_CANARIA)
+#define CRATE   DF(_CRATE)
 
 #define SYM      TT(_SYM)
 #define NAV      TT(_NAV)
@@ -105,10 +95,14 @@
 // Aliases for One Shot mods keys
 #define OSHFT    OSM(MOD_LSFT)
 #define OALT     OSM(MOD_LALT)
+#define OCTRL    OSM(MOD_LCTL)
 
 // Aliases for tap dance
-#define MOUSE    TD(TD_MOUSE)
-#define TDCMD    TD(TD_CMD_TILDE)
+#define MOUSE  TD(TD_MOUSE)
+#define TDCMD  TD(TD_CMD_TILDE)
+#define OSHTSF TD(TD_OSHTSF)
+#define OSHTCT TD(TD_OSHTCT)
+#define CAPS   TD(TD_CAPS)
 
 // TODO: Migrate these combos to combos.c
 const uint16_t PROGMEM question_combo[] = {HM_N, KC_U, COMBO_END};
@@ -162,9 +156,11 @@ combo_t key_combos[] = {
 };
 
 tap_dance_action_t tap_dance_actions[] = {
-  // Tap once for LMB, twice for RMB
-  [TD_MOUSE] = ACTION_TAP_DANCE_DOUBLE(MS_BTN1, MS_BTN2),
-  [TD_CMD_TILDE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_cmd_finished, dance_cmd_reset),
+    [TD_MOUSE] = ACTION_TAP_DANCE_DOUBLE(MS_BTN1, MS_BTN2),
+    [TD_CMD_TILDE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_cmd_finished, dance_cmd_reset),
+    [TD_OSHTSF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, oshtsf_finished, oshtsf_reset),
+    [TD_OSHTCT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, oshtct_finished, oshtct_reset),
+    [TD_CAPS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_caps_finished, td_caps_reset),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -177,14 +173,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Declaration:
  *    - CAPS: Tap dance (1 tap Caps word, 2 taps Caps Lock)
  *    - ALT: One shot at thumb level
- *    - DRAGS: Drag Scroll for trackpad, press to use trackpad to scroll instead of moving mouse // TODO!
  * 
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |  TAB   |   Q  |   W  |   F  |   P  |   B  |                              |   J  |   L  |   U  |   Y  | ;  : |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |  CMD   |   A  |   R  |   S  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   O  | TILDE  |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Z  |   X  |   C  |   D  |   V  |  ALT | CAPS |  |F-keys| DRAGS|   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
+ * | LShift |   Z  |   X  |   C  |   D  |   V  |  ALT | CAPS |  |F-keys| SHIFT|   K  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter|Bckspc|  SYM | MEH  |HYPER |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -196,22 +191,53 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ALPHA] = LAYOUT_split_3x6_5_hlc(
         KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J,   KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_ESC,
         TDCMD   , HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  HM_O , TILDE,
-        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , OALT   ,  KC_CAPS,     FKEYS, DRAG_S , KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+        KC_LSFT , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , OALT   , CAPS    ,     FKEYS, OSHFT  , KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
                                      MOUSE,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
         KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
 /*
- * Second alpha layer: Canaria A-C Swapped - https://github.com/christoofar/canaria
+ * Second Alpha Layer: Crate, a custom spanish focused layout created by Isaac Serrano.
+ *
+ * No Homerow mods
+ * 
+ * Declaration:
+ *    - CAPS: Tap dance (1 tap Caps word, 2 taps Caps Lock)
+ *    - ALT: One shot at thumb level
+ * 
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |  TAB   |   W  |   L  |   Y  |   P  |   B  |                              |   J  |   F  |   O  |   U  | ;  : |  ESC   |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |  CMD   |   C  |   R  |   A  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   K  | TILDE  |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * | LShift |   X  |   Z  |   Q  |   D  |   V  |  ALT | CAPS |  |F-keys| SHIFT|   H  |   S  | ,  < | . >  | /  ? | TG_OS  |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter|Bckspc|  SYM | MEH  |HYPER |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ * ,-----------------------------------.                                              ,-----------------------------------.
+ * | MUTE | ____ | _____ | ____ | ____ |                                              | MUTE | ____ | _____ | ____ | ____ |
+ * `-----------------------------------'                                              `-----------------------------------'
+ */
+  [_CRATE] = LAYOUT_split_3x6_5_hlc(
+    KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_J,   KC_F ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
+    TDCMD   , KC_C ,  KC_R   ,  KC_A  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  KC_K , TILDE,
+    KC_LSFT , KC_X ,  KC_Z   ,  KC_Q  ,   KC_D ,   KC_V , OALT   , CAPS    ,     FKEYS, OSHFT  , KC_H,   KC_S ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+                                 MOUSE,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
+    KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
+  ),
+
+/*
+ * Third alpha layer: Canaria A-C Swapped - https://github.com/christoofar/canaria
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |  TAB   |   W  |   L  |   Y  |   P  |   B  |                              |   F  |   J  |   O  |   U  | ;  : |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |  CMD   |   A  |   R  |   S  |   T  |   G  |                              |   M  |   N  |   E  |   I  |   C  | TILDE  |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Q  |   Z  |   V  |   D  |   K  | MOUSE|CapsLk|  |F-keys|  WM  |   X  |   H  | ,  < | . >  | /  ? | TG_OS  |
+ * | LShift |   Q  |   Z  |   V  |   D  |   K  |  ALT |CapsLk|  |F-keys|  WM  |   X  |   H  | ,  < | . >  | /  ? | TG_OS  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |Adjust|  WM  |  NAV | Space|AltSpc|  | Enter| Space|  SYM | RGUI | Menu |
+ *                        | Click|  WM  |  NAV | Space|AltSpc|  | Enter|Bckspc|  SYM | MEH  | HYPER|
  *                        |      |      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  * ,-----------------------------------.                                              ,-----------------------------------.
@@ -221,8 +247,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_CANARIA] = LAYOUT_split_3x6_5_hlc(
     KC_TAB  , KC_W ,  KC_L   ,  KC_Y  ,   KC_P ,   KC_B ,                                        KC_F,   KC_J ,  KC_O ,   KC_U ,KC_SCLN, KC_ESC,
     TDCMD   , HM_A ,  HM_R   ,  HM_S  ,   HM_T ,   KC_G ,                                        KC_M,   HM_N ,  HM_E ,   HM_I ,  KC_C , TILDE,
-    KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K , KC_LBRC,KC_CAPS,     FKEYS  ,   WM   , KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
-                               MS_BTN1,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
+    KC_LSFT , KC_Q ,  KC_Z   ,  KC_V  ,   KC_D ,   KC_K ,   OALT , CAPS   ,   FKEYS  ,    OSHFT , KC_X,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH, TG_OS,
+                                 MOUSE,    WM  ,   NAV  , KC_SPC ,A(KC_SPC),  KC_ENTER, KC_BSPC, SYM , KC_MEH ,KC_HYPR,
     KC_MUTE, KC_NO,  KC_NO, KC_NO, KC_NO,                                                                KC_MUTE, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
@@ -251,7 +277,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_VOLU, KC_DEL,
     _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS,
     _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
-                               _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                               _______, _______, _______, _______, _______, OSHTSF , OSHTCT , _______, _______, _______,
     _______, _______, _______,_______,_______,                                                _______, _______, _______, _______, _______
     ),
 
@@ -309,9 +335,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Adjust Layer: Default layer settings, RGB
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |      |      |ALPHA |      |      |                              |      |      |      |      |      |        |
+ * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      |      |CANARI|      |      |                              | TOG  | SAI  | HUI  | VAI  | MOD  |        |
+ * |        |ALPHA |CRATE |CANARI|      |      |                              | TOG  | SAI  | HUI  | VAI  | MOD  |        |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
  * |        |      |      |      |      |      |      |      |  |      |      |      | SAD  | HUD  | VAD  | RMOD |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
@@ -323,8 +349,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------'                                              `-----------------------------------'
  */
     [_ADJUST] = LAYOUT_split_3x6_5_hlc(
-    _______, _______, _______, ALPHA  , _______, _______,                                    _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, CANARIA, _______, _______,                                    RM_TOGG, RM_SATU, RM_HUEU, RM_VALU, RM_NEXT, _______,
+    _______, _______, _______, _______, _______, _______,                                    _______, _______, _______, _______, _______, _______,
+    _______, ALPHA  , CANARIA, CRATE  , _______, _______,                                    RM_TOGG, RM_SATU, RM_HUEU, RM_VALU, RM_NEXT, _______,
     _______, _______, _______, _______, _______, _______,_______, _______, _______, _______, _______, RM_SATD, RM_HUED, RM_VALD, RM_PREV, _______,
                                _______, _______, _______,_______, _______, _______, _______, _______, _______, _______,
     _______, _______,  _______, _______, _______,                                                      _______, _______, _______, _______, _______
