@@ -1,150 +1,147 @@
 # Isaac's QMK Userspace
 
-**Current info on how to compile and info regarding the halcyon modules are within the `halcyon` branch.**
+**Current information on how to compile and information regarding the halcyon modules are within the `halcyon` branch.**
 
-> Un keymap pensado para desarrollo productivo, navegación eficiente, y atajos personalizados para entornos como GlazeWM, IntelliJ IDEA y Android Studio, con un enfoque modular y multicapa.
+> A keymap designed for productive development, efficient navigation, and custom shortcuts for environments like GlazeWM, IntelliJ IDEA, and Android Studio, with a modular and multi-layered approach.
 
 ![keymap](res/combined.png)
 
-## Requisitos
+## Requirements
 
-Este keymap utiliza características avanzadas de QMK y requiere las siguientes herramientas para sacarle el máximo provecho:
+This keymap uses advanced QMK features and requires the following tools to take full advantage of it:
 
 - [QMK Firmware](https://github.com/qmk/qmk_firmware)
-- [GlazeWM](https://github.com/larsenwork/GlazeWM) o [AeroSpace](https://github.com/aerospacewm/aerospace) – para gestión de ventanas tipo tiling.
-- [MacForAll plugin (JetBrains)](https://plugins.jetbrains.com/plugin/19844-macforall) – permite usar keybindings estilo macOS en Windows.
-- [Backup and Sync (JetBrains)](https://plugins.jetbrains.com/plugin/10458-settings-repository) – para sincronizar preferencias y atajos.
+- [GlazeWM](https://github.com/glzr-io/glazewm) or [AeroSpace](https://github.com/nikitabobko/AeroSpace) – for tiling window management.
+
+- [MacForAll plugin (JetBrains)](https://plugins.jetbrains.com/plugin/13968-macos-for-all) – allows using macOS style keybindings on Windows.
+- [Backup and Sync (JetBrains)](https://plugins.jetbrains.com/plugin/20868-backup-and-sync) – to sync preferences and shortcuts.
 
 ---
 
-## Comandos de compilación actuales
+## Current Compilation Commands
 
-Para compilar cada mitad del teclado con configuraciones específicas:
+To compile each half of the keyboard with specific configurations:
 
 ```bash
-# Módulo izquierdo con pantalla TFT
+# Left module with TFT display
 qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_TFT_DISPLAY=1 -e TARGET=kyria_display
 
-# Módulo derecho con trackpad Cirque
+# Right module with Cirque trackpad
 qmk compile -kb splitkb/halcyon/kyria/rev4/isaacsa51 -e HLC_CIRQUE_TRACKPAD=1 -e TARGET=kyria_trackpad
 ```
 
-## Capas y propósito
+## Layers and Purpose
 
-El keymap se organiza por capas temáticas con una clara intención funcional y de contexto de uso:
+The keymap is organized into thematic layers with clear functional intent and context of use:
 
 #### ALPHA (Base - Colemak DH)
 
-Layout principal.
+Main layout.
 
 ![keymap](res/alpha.png)
 
+- Mods in the middle row (ARST NEIO): Ctrl, Alt, GUI, Shift.
+- Tap Dance: Caps Lock (1 tap) / Caps Lock (2 taps).
+- Combinations (combos) for common symbols and operators.
 
-- Mods en la fila central (ARST NEIO): Ctrl, Alt, GUI, Shift.
-- Tap Dance: Caps Word (1 toque) / Caps Lock (2 toques).
-- Combinaciones (Combos) para símbolos y operadores frecuentes.
+#### CANARIA (Alternative)
 
-#### CANARIA (Alternativo)
+- Variant based on Canaria Layout.
+- A-C swapped for convenience.
+- Same mod layout in the home row.
 
-- Variante basada en Canaria Layout.
-- A-C Swapped para mayor comodidad.
-- Mismo esquema de mods en home row.
-
-#### NAV (Navegación y Multimedia)
+#### NAV (Navigation and Multimedia)
 ![keymap](res/nav.png)
-- Números, teclas de navegación (flechas, inicio/fin) y control de medios.
-- Comodines de One Shot y Tap Dance para Shift y Ctrl.
+- Numbers, navigation keys (arrows, home/end), and media controls.
+- One Shot and Tap Dance wildcards for Shift and Ctrl.
 
-#### SYM (Símbolos)
+#### SYM (Symbols)
 ![keymap](res/sym.png)
-- No todos los simbolos se encuentran dentro de esta capa ya que varios de ellos son más fáciles de acceder mediante combos.
+- Not all symbols are found in this layer, as several are easier to access via combo boxes.
 
-#### FUNCTION (Funciones)
+#### FUNCTION (Functions)
 ![keymap](res/function.png)
-- Teclas F1-F12
-- Entrada a la capa ADJUST.
+- F1-F12 keys
+- Access to the ADJUST layer.
 
 #### WM (Window Manager)
 ![keymap](res/wm.png)
-- Atajos para gestionar ventanas en GlazeWM o AeroSpace.
-- Movimiento entre ventanas, cambio de layout, y acceso rápido a apps.
-- Incluye One Shot Shift para reducir combinaciones simultáneas.
+- Shortcuts for managing windows in GlazeWM or AeroSpace.
+- Moving between windows, changing layouts, and quickly accessing apps.
+- Includes One Shot Shift to reduce simultaneous combinations.
 
 #### CODE (Android / JetBrains IDEs)
 ![keymap](res/code.png)
--  Pensado para desarrollo con IntelliJ y Android Studio.
+- Designed for development with IntelliJ and Android Studio.
 
-- Incluye atajos como:
+- Includes shortcuts such as:
 
-    1. RUN: Ejecutar proyecto (Ctrl+Alt+R)
+1. RUN: Run project (Ctrl+Alt+R)
 
-    1. DEBUG: Iniciar depuración (Ctrl+Alt+D)
+1. DEBUG: Start debugging (Ctrl+Alt+D)
 
-    1. QCKACT: Acción rápida (Alt+Enter)
+1. QCKACT: Quick Action (Alt+Enter)
 
-    1. NEWFLE: Nuevo archivo/módulo
+1. NEWFLE: New file/module
 
-    1. GLDSYN: Sincronización de Gradle (Ctrl+Shift+O)
+1. GLDSYN: Gradle sync (Ctrl+Shift+O)
 
-    1. BRKPNT: Breakpoints (Ctrl+F8)
+1. BRKPNT: Breakpoints (Ctrl+F8)
 
-    1. Navegación entre tabs y ventanas (Ctrl+Shift+[, Ctrl+Alt+Shift+PgDn)
+1. Tab and window navigation (Ctrl+Shift+[, Ctrl+Alt+Shift+PgDn)
 
-#### ADJUST (Ajustes y RGB)
+#### ADJUST (Adjustments and RGB)
 
-- Cambio de layout por defecto (_ALPHA, _CANARIA).
-- Control de iluminación RGB: brillo, tono, saturación, efectos.
+- Change default layout (_ALPHA, _CANARIA).
+- RGB lighting control: brightness, hue, saturation, effects.
 
 #### GIT (One-Shot Layer - Git)
-> [!WARNING]  
-> Capa momentánea para acciones Git: commit, push, rebase, stash, etc.
-> Ideal para integrarse en flujos IntelliJ.
+> [!WARNING]
+> Currently this layer is on WIP
+> Instant layer for Git actions: commit, push, rebase, stash, etc.
+> Ideal for integrating into IntelliJ workflows.
 
 ## Combos
 ![keymap](res/combos.png)
-Optimización mediante Combos para símbolos frecuentes, como:
+Combos optimization for frequent symbols, such as:
 
-| Teclas Involucradas       | Resultado |
-|---------------------------|-----------|
-| S + T                     | `=`       |
-| N + U                     | `?`       |
-| W + F                     | `[`       |
-| F + P                     | `]`       |
-| R + S                     | `-`       |
-| X + C                     | `{`       |
-| C + D                     | `}`       |
-| T + G                     | `+`       |
-| W + R                     | `@`       |
-| S + D                     | `_`       |
-| L + U                     | `(`       |
-| U + Y                     | `)`       |
-| N + E                     | `:`       |
-| M + N                     | `|`       |
-| H + ,                     | `<`       |
-| , + .                     | `>`       |
-| E + I                     | `"`       |
-| U + E                     | `*`       |
-| E + .                     | `\`       |
-| J + M                     | `^`       |
-| F + T                     | `!`       |
-| T + P                     | `$`       |
-| F + S                     | `#`       |
+| Keys Involved | Result |
+|--------------------------|-----------|
+| S+T | `=` |
+| N+U | `?` |
+| W+F | `[` |
+| F+P | `]` |
+| R+S | `-` |
+| X + C | `{` |
+| C+D | `}` |
+| T+G | `+` |
+| W+R | `@` |
+| S+D | `_` |
+| L+U | `(` |
+| U+Y | `)` |
+| N+E | `:` |
+| M + N | `|` |
+| H+, | `<` |
+| , + . | `>` |
+| E+I | `"` |
+| U + E | `*` |
+| E + . | `\` |
+| J + M | `^` |
+| F + T | `!` |
+| T + P | `$` |
+| F + S | `#` |
 
-## Filosofía
+## Philosophy
 
-Modularidad: Separación clara por contexto: navegación, símbolos, macros, ajustes, ventanas, desarrollo.
+Modularity: Clear separation by context: navigation, symbols, macros, settings, windows, development.
 
-Portabilidad: Funciona tanto en macOS como Windows con detección de sistema y ajustes contextuales (TG_OS).
+Portability: Works on both macOS and Windows with system detection and contextual settings (TG_OS).
 
-Eficiencia: Home row mods, One Shot Layers, Combos, y Thumb Cluster bien aprovechado.
+Efficiency: Home row mods, One Shot Layers, Combos, and well-utilized Thumb Cluster.
 
-Enfoque Dev/Productividad: Capa entera para atajos de desarrollo, shortcuts de tiling, y movimientos rápidos.
+Dev/Productivity Focus: Entire layer for development shortcuts, tiling shortcuts, and quick moves.
 
-## Pendientes
-1. Migrar combos a archivo separado.
+## To Do
+1. Migrate combos to a separate file.
 
-2. Completar la capa _GIT.
-
-3. Añadir documentación visual (diagrama por capa).
-
-4. Hacer funcionar la tecla DRAG_S
+2. Complete the _GIT layer.
