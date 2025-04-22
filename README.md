@@ -4,6 +4,8 @@
 
 > Un keymap pensado para desarrollo productivo, navegación eficiente, y atajos personalizados para entornos como GlazeWM, IntelliJ IDEA y Android Studio, con un enfoque modular y multicapa.
 
+![keymap](res/combined.png)
+
 ## Requisitos
 
 Este keymap utiliza características avanzadas de QMK y requiere las siguientes herramientas para sacarle el máximo provecho:
@@ -35,6 +37,9 @@ El keymap se organiza por capas temáticas con una clara intención funcional y 
 
 Layout principal.
 
+![keymap](res/alpha.png)
+
+
 - Mods en la fila central (ARST NEIO): Ctrl, Alt, GUI, Shift.
 - Tap Dance: Caps Word (1 toque) / Caps Lock (2 toques).
 - Combinaciones (Combos) para símbolos y operadores frecuentes.
@@ -46,31 +51,27 @@ Layout principal.
 - Mismo esquema de mods en home row.
 
 #### NAV (Navegación y Multimedia)
+![keymap](res/nav.png)
 - Números, teclas de navegación (flechas, inicio/fin) y control de medios.
 - Comodines de One Shot y Tap Dance para Shift y Ctrl.
 
 #### SYM (Símbolos)
-
+![keymap](res/sym.png)
 - No todos los simbolos se encuentran dentro de esta capa ya que varios de ellos son más fáciles de acceder mediante combos.
 
 #### FUNCTION (Funciones)
-
+![keymap](res/function.png)
 - Teclas F1-F12
 - Entrada a la capa ADJUST.
 
-#### ADJUST (Ajustes y RGB)
-
-- Cambio de layout por defecto (_ALPHA, _CANARIA).
-- Control de iluminación RGB: brillo, tono, saturación, efectos.
-
 #### WM (Window Manager)
-
+![keymap](res/wm.png)
 - Atajos para gestionar ventanas en GlazeWM o AeroSpace.
 - Movimiento entre ventanas, cambio de layout, y acceso rápido a apps.
 - Incluye One Shot Shift para reducir combinaciones simultáneas.
 
-#### DROID (Android / JetBrains IDEs)
-
+#### CODE (Android / JetBrains IDEs)
+![keymap](res/code.png)
 -  Pensado para desarrollo con IntelliJ y Android Studio.
 
 - Incluye atajos como:
@@ -89,14 +90,18 @@ Layout principal.
 
     1. Navegación entre tabs y ventanas (Ctrl+Shift+[, Ctrl+Alt+Shift+PgDn)
 
-#### GIT (One-Shot Layer - Git)
+#### ADJUST (Ajustes y RGB)
 
+- Cambio de layout por defecto (_ALPHA, _CANARIA).
+- Control de iluminación RGB: brillo, tono, saturación, efectos.
+
+#### GIT (One-Shot Layer - Git)
 > [!WARNING]  
 > Capa momentánea para acciones Git: commit, push, rebase, stash, etc.
 > Ideal para integrarse en flujos IntelliJ.
 
 ## Combos
-
+![keymap](res/combos.png)
 Optimización mediante Combos para símbolos frecuentes, como:
 
 | Teclas Involucradas       | Resultado |
