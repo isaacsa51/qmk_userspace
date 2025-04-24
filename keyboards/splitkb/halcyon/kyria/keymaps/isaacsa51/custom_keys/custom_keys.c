@@ -50,21 +50,16 @@ bool is_ignorable_key(uint16_t keycode) {
 bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
     if (record->event.pressed) {
-        if (
-            ctrl_sticky_active &&
-            get_base_keycode(keycode) != get_base_keycode(SWTCHR) &&
-            record->event.pressed &&
-            !is_ignorable_key(keycode)
-        ) {
-            unregister_code(KC_LCTL);
-            ctrl_sticky_active = false;
+        if (ctrl_sticky_active 
+            && get_base_keycode(keycode) != get_base_keycode(SWTCHR) 
+            && !is_ignorable_key(keycode)) {
+            tap_code16(keycode);
+            unregister_code(KC_LCTL);    
+            ctrl_sticky_active = false;  
+            return false;
         }
 
         switch (keycode) {
-            case DRAG_S:
-                set_scrolling = record->event.pressed;
-                return false;
-
             case TILDE:
                 awaiting_smart_tilde = true;
                 return false;
@@ -142,9 +137,9 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
                 return false;
 
             case SWTCHR:
-                register_code(KC_LCTL);     // Presiona Ctrl
-                tap_code(KC_TAB);           // Tab
-                ctrl_sticky_active = true;  // Activa el "sticky"
+                register_code(KC_LCTL);
+                tap_code(KC_TAB);
+                ctrl_sticky_active = true;
                 return false;
 
             case IDENT:
@@ -163,7 +158,7 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
                 return false;
 
             case SEARCH:
-                tap_code16(KC_LSFT); tap_code16(KC_LSFT); // Double shift
+                tap_code16(KC_LSFT); tap_code16(KC_LSFT);
                 return false;
         }
     } else {
