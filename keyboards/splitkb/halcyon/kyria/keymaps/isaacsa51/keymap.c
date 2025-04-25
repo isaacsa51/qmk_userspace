@@ -39,10 +39,6 @@
      ¯¯¯¯¯¯¯¯¯¯
     - Developed for Halcyon Kyria Rev. 4 (Screen + Cirque Trackpad)
 
-    [ Todo ]
-     ¯¯¯¯¯¯
-    - Add rgb lighting depending on the current layer.
-
     [ Settings ]
      ¯¯¯¯¯¯¯¯¯¯
     - QMK version keymap was released at April 4, 2025.
@@ -60,6 +56,12 @@
 
     - During develpment, it is recomended to turn off: RGB_MATRIX_ENABLE=no  RGB_MATRIX_CUSTOM_USER=no in rules.mk
       to save some memory, and disable NO_DEBUG in config.h to be able to trace the code.
+
+  [ Todo ]
+   ¯¯¯¯¯¯
+    - Add rgb lighting depending on the current layer.
+    - Currently tilde doesn't work properly on MacOS
+    -   
 */
 
 #include QMK_KEYBOARD_H

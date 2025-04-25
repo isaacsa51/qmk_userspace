@@ -5,8 +5,8 @@
 #include "../layers.h"
 
 // Modify these values to adjust the scrolling speed
-#define SCROLL_DIVISOR_H 16.0
-#define SCROLL_DIVISOR_V 16.0
+#define SCROLL_DIVISOR_H 8.0
+#define SCROLL_DIVISOR_V 8.0
 
 // Variables to store accumulated scroll values
 float scroll_left_accumulated_h = 0;
@@ -181,13 +181,13 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
             case KC_N:
                 if (current_os == OS_WIN) {
                     if (is_upper) {
-                        register_code(KC_RALT); register_code(KC_LSFT); tap_code(KC_N);
+                        register_code(KC_RALT); register_code(KC_LSFT); tap_code(KC_N); 
                         unregister_code(KC_LSFT); unregister_code(KC_RALT);
                     } else {
                         register_code(KC_RALT); tap_code(KC_N); unregister_code(KC_RALT);
                     }
                 } else {
-                    register_code(KC_LALT); tap_code(KC_E); unregister_code(KC_LALT);
+                    register_code(KC_LSFT); tap_code(KC_GRV); unregister_code(KC_LSFT);
                     if (is_upper) register_code(KC_LSFT);
                     tap_code(KC_N);
                     if (is_upper) unregister_code(KC_LSFT);
@@ -201,7 +201,7 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
                     tap_code(base_kc);
                     if (is_upper) unregister_code(KC_LSFT);
                 } else {
-                    register_code(KC_LALT); tap_code(KC_E); unregister_code(KC_LALT);
+                    tap_code(KC_QUOTE);
                     if (is_upper) register_code(KC_LSFT);
                     tap_code(base_kc);
                     if (is_upper) unregister_code(KC_LSFT);
