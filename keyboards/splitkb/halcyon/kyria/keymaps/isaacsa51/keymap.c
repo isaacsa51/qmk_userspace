@@ -266,7 +266,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
  * |        |      |  4   |   5  |   6  |  0   |                              | PgDn |  ←   |   ↓  |   →  | VolDn| Insert |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |  1   |   2  |   3  |      |      |      |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
+ * |        |      |  1   |   2  |   3  |SELWRD|      |      |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
  *                        |      |      | XXXX |      |      |  |      |OSHTSF|OSHTCT|      |      |
  *                        |      |      |      |      |      |  |      |      |      |      |      |
@@ -278,7 +278,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_NAV] = LAYOUT_split_3x6_5_hlc(
     _______, _______,  KC_7  ,  KC_8  ,  KC_9  , _______,                                     KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_VOLU, KC_DEL,
     _______, _______,  KC_4  ,  KC_5  ,  KC_6  ,   KC_0 ,                                     KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_VOLD, KC_INS,
-    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , _______, _______, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
+    _______, _______,  KC_1  ,  KC_2  ,  KC_3  , SELWORD, _______, _______, _______, _______,KC_PAUSE, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_PSCR,
                                _______, _______, _______, _______, _______, OSHTSF , OSHTCT , _______, _______, _______,
     _______, _______, _______,_______,_______,                                                _______, _______, _______, _______, _______
     ),
