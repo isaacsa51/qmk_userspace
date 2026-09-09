@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 enum os_modes {
     OS_MAC,
     OS_WIN,

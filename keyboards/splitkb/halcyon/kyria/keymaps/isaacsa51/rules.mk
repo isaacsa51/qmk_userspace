@@ -9,12 +9,39 @@ SRC += os_detection/os_layer.c
 SRC += combos/combos.c
 SRC += tap_dance/td_declarations.c
 
+# On-display keymap renderer (only meaningful with the TFT module)
+ifeq ($(strip $(HLC_TFT_DISPLAY)), 1)
+    SRC += display/hook.c
+    SRC += display/utils.c
+    SRC += display/keymap/keycode_strings.c
+    SRC += display/keymap/draw_keymap.c
+    SRC += display/keymap/process_keymap.c
+
+    SRC += display/fonts/3x5.qff.c
+    SRC += display/fonts/4x7.qff.c
+    SRC += display/fonts/5x7.qff.c
+    SRC += display/fonts/9x12.qff.c
+
+    SRC += display/images/icons/backspace.qgf.c
+    SRC += display/images/icons/tab.qgf.c
+    SRC += display/images/icons/space.qgf.c
+    SRC += display/images/icons/shift.qgf.c
+    SRC += display/images/icons/enter.qgf.c
+    SRC += display/images/icons/lock.qgf.c
+    SRC += display/images/icons/mute.qgf.c
+    SRC += display/images/icons/volume_down.qgf.c
+    SRC += display/images/icons/volume_up.qgf.c
+endif
+
 # Enable combos
 COMBO_ENABLE = yes
 
 LAYER_LOCK_ENABLE = yes
 
 POINTING_DEVICE_ENABLE = yes
+
+# MS_* keycodes for the _MOUSE layer (cursor / wheel / buttons)
+MOUSEKEY_ENABLE = yes
 
 TAP_DANCE_ENABLE = yes
 

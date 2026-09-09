@@ -9,6 +9,6 @@ enum layers {
     _FUNCTION,
     _ADJUST,
     _WM,
-    _DROID,
-    _GIT,
+    _GAME,
+    _MOUSE,
 };

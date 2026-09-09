@@ -16,6 +16,7 @@ void dance_cmd_finished(tap_dance_state_t *state, void *user_data) {
         register_code(current_os == OS_MAC ? KC_LGUI : KC_LCTL);
     } else if (state->count == 2) {
         awaiting_smart_tilde = true;
+        smart_tilde_timer = timer_read32();
     }
 }
 
@@ -27,16 +28,15 @@ void dance_cmd_reset(tap_dance_state_t *state, void *user_data) {
 
 void oshtsf_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
-      // One-shot Shift
-      register_code(KC_LSFT);
-      unregister_code(KC_LSFT);
+      // One-shot Shift: applies to the next key press (add_ so OSHTSF + OSHTCT stack)
+      add_oneshot_mods(MOD_BIT(KC_LSFT));
     } else if (state->count == 2) {
-      // Hold Shift
+      // Hold Shift until released
       register_code(KC_LSFT);
       td_shift_state.is_hold = true;
     }
 }
-  
+
 void oshtsf_reset(tap_dance_state_t *state, void *user_data) {
     if (td_shift_state.is_hold) {
       unregister_code(KC_LSFT);
@@ -46,16 +46,15 @@ void oshtsf_reset(tap_dance_state_t *state, void *user_data) {
 
 void oshtct_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
-      // One-shot Ctrl
-      register_code(KC_LCTL);
-      unregister_code(KC_LCTL);
+      // One-shot Ctrl: applies to the next key press
+      add_oneshot_mods(MOD_BIT(KC_LCTL));
     } else if (state->count == 2) {
-      // Hold Ctrl
+      // Hold Ctrl until released
       register_code(KC_LCTL);
       td_ctrl_state.is_hold = true;
     }
 }
-  
+
 void oshtct_reset(tap_dance_state_t *state, void *user_data) {
     if (td_ctrl_state.is_hold) {
       unregister_code(KC_LCTL);
@@ -65,9 +64,10 @@ void oshtct_reset(tap_dance_state_t *state, void *user_data) {
 
 void td_caps_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
-        tap_code(KC_CAPS); // Activa Caps Lock
+        tap_code(KC_CAPS);          // Caps Lock
+        rgb_notify(255, 0, 0, 3);   // flash red
     } else if (state->count == 2) {
-        caps_word_on();    // Activa Caps Word
+        caps_word_on();             // Caps Word (caps_word_set_user flashes red)
     }
 }
 
