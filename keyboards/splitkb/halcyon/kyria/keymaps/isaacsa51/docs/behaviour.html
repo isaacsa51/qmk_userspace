@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Behaviour — Kyria Keymap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem('kmtheme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<nav class="topnav"><div class="inner">
+  <a class="brand" href="index.html"><span>Kyria</span> Keymap</a>
+  <a class="nav" href="index.html">Overview</a>
+  <a class="nav" href="layers.html">Layers</a>
+  <a class="nav" href="combos.html">Combos</a>
+  <a class="nav on" href="behaviour.html">Behaviour</a>
+  <a class="nav" href="build.html">Build</a>
+  <button class="theme" data-theme-toggle title="Toggle light / dark">◐</button>
+</div></nav>
+
+<main class="wrap">
+  <p class="eyebrow">Behaviour</p>
+  <h1>Custom <span>behaviour</span></h1>
+  <p class="lead">The parts that a key grid can't show: home-row mods, tap dances,
+  the one-shot-or-hold thumb mods, the smart-tilde dead key, the OS-aware
+  shortcut table, RGB, and the remaining declarations.</p>
+
+  <h2 class="shead">Home-row mods</h2>
+  <p>Order pinky→index is <b>Alt · GUI · Shift · Ctrl</b>, mirrored on the right hand, on all three base layers.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Finger</th><th>Left</th><th>Right</th></tr></thead>
+    <tbody>
+      <tr><td>pinky</td><td>Alt</td><td>Alt</td></tr>
+      <tr><td>ring</td><td>GUI</td><td>GUI</td></tr>
+      <tr><td>middle</td><td>Shift</td><td>Shift</td></tr>
+      <tr><td>index</td><td>Ctrl</td><td>Ctrl</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tnote"><b>Chordal Hold:</b> an opposite-hand chord resolves as <b>hold</b> instantly; a
+  same-hand roll stays a <b>tap</b>. <code>TAPPING_TERM</code> (200 ms) is only the fallback for a
+  same-hand hold — tune 170–220, drop <code>PERMISSIVE_HOLD</code> if same-hand rolls misfire. The
+  index-inner keys (<kbd>G</kbd> left, <kbd>M</kbd> right) have no mod.</p>
+
+  <h2 class="shead">Tap dances &amp; thumb mods</h2>
+  <div class="cols2">
+    <div class="panel">
+      <h3>Tap dances</h3>
+      <ul class="rows-list">
+        <li><span class="t">Cmd / ~</span><span class="d">tap+hold → <b>⌘</b> (mac) / <b>Ctrl</b> (win) · double-tap → <b>arm the smart tilde</b> (left home outer)</span></li>
+        <li><span class="t">Caps</span><span class="d">tap → <b>Caps Lock</b> · double-tap → <b>Caps Word</b> — both flash the board <b>red ×3</b> (left upper thumb)</span></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Thumb mods — <code>OS_SFT</code> / <code>OS_CTL</code></h3>
+      <ul class="rows-list">
+        <li><span class="t">SF* / CT*</span><span class="d"><b>Tap</b> → one-shot Shift / Ctrl (the two <b>stack</b>). <b>Hold</b> → real Shift / Ctrl that engages the <b>instant another key is pressed</b> and holds until release — no tapping-term wait (Nav right thumb).</span></li>
+        <li><span class="t">⌥¹ / ⇧¹</span><span class="d">Plain one-shot Alt / Shift (<code>OSM</code>) on the base upper thumbs — always a one-shot.</span></li>
+      </ul>
+      <p class="tnote">Holding <b>SF*</b> + typing shifts everything; holding it + the arrows selects by word.</p>
+    </div>
+  </div>
+
+  <h2 class="shead">Smart tilde</h2>
+  <p>The <kbd>~</kbd> key (right home outer) or a double-tap of <b>Cmd / ~</b> arms a one-shot dead key. The next key decides:</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Next key</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>a e i o u</td><td class="mono">á é í ó ú</td></tr>
+      <tr><td>n</td><td class="mono">ñ &nbsp; (the only path that branches on OS)</td></tr>
+      <tr><td>s l m d r t c</td><td class="mono">straight ' + that letter &nbsp; (McDonald's, I'll, c'mon)</td></tr>
+      <tr><td>space</td><td class="mono">a lone '</td></tr>
+      <tr><td>anything else</td><td class="mono">the tilde is dropped; the key types normally</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tnote">Assumes a US-International host layout. A modifier pressed between <kbd>~</kbd> and the
+  target passes through (so <kbd>~</kbd> → Shift → vowel = an uppercase accent). The latch also expires after ~1 s.</p>
+
+  <h2 class="shead">OS-aware keys</h2>
+  <p><code>TG_OS</code> flips these between macOS and Windows. Default is <b>Windows</b>, and the
+  choice <b>persists</b> across replug/reboot (stored in EEPROM).</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Key</th><th>macOS</th><th>Windows</th></tr></thead>
+    <tbody>
+      <tr><td>Cmd</td><td class="os">⌘ (hold)</td><td class="os">Ctrl (hold)</td></tr>
+      <tr><td>Copy · Cut · Paste</td><td class="os">⌘C · ⌘X · ⌘V</td><td class="os">Ctrl C · X · V</td></tr>
+      <tr><td>W‹ · W› &nbsp;(word move)</td><td class="os">⌥← · ⌥→</td><td class="os">Ctrl← · Ctrl→</td></tr>
+      <tr><td>DelWrd</td><td class="os">⌥⌫</td><td class="os">Ctrl⌫</td></tr>
+      <tr><td>DelLn</td><td class="os">⌘⌫</td><td class="os">Home, ⇧End, ⌫</td></tr>
+      <tr><td>AltTab</td><td class="os">⌘Tab</td><td class="os">Alt+Tab</td></tr>
+      <tr><td>~ → ñ</td><td class="os">dead ~ , then n</td><td class="os">AltGr + n</td></tr>
+      <tr><td>WM layer (all)</td><td class="os">— (built for FancyWM)</td><td class="os">taps Alt+Win, then a key</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="shead">RGB</h2>
+  <p>PaletteFx (<code>getreuer/palettefx</code>). Default <b>Reactive</b> effect + <b>Polarized</b> palette,
+  re-forced with <code>*_noeeprom</code> on every plug-in by <code>keyboard_post_init_user()</code> — the
+  EEPROM otherwise keeps a stale mode. Cycle at runtime with the RGB row on Adjust
+  (<code>RM_NEXT/PREV</code> = effect, <code>RM_HUEU/HUED</code> = palette).</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Layer</th><th>RGB</th></tr></thead>
+    <tbody>
+      <tr><td>bases, Game, WM</td><td>PaletteFx Reactive animation</td></tr>
+      <tr><td>Nav</td><td>per-key by function — numpad <b>blue</b>, arrows <b>red</b>, word/page nav <b>green</b>, delete <b>orange</b>, clipboard <b>purple</b>, media <b>yellow</b>, SelWord <b>cyan</b>, thumb mods <b>white</b></td></tr>
+      <tr><td>Sym / Function</td><td>flat <b>green</b> / flat <b>yellow</b> over every live key</td></tr>
+      <tr><td>Adjust / Mouse</td><td>flat <b>white</b> / flat <b>magenta</b></td></tr>
+      <tr><td>WM picker</td><td>held cluster <b>white</b>, available desktops <b>green</b>, one-shot Shift <b>blue</b></td></tr>
+      <tr><td>Flashes (any layer)</td><td>OS switch → <b>green ×2</b> · Caps Lock / Caps Word → <b>red ×3</b></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="shead">Other declarations</h2>
+  <div class="panel">
+    <ul class="rows-list">
+      <li><span class="t">TG_OS</span><span class="d">Flip the OS mode Win ⇄ Mac (base bottom-right). Persists across replug/reboot.</span></li>
+      <li><span class="t">SelW</span><span class="d"><code>getreuer/select_word</code> — tap selects the current word, tap again extends by word (Nav).</span></li>
+      <li><span class="t">MEH / HYPER</span><span class="d">Ctrl+Shift+Alt / +GUI — app-specific shortcuts via Kanata etc. (base right thumbs).</span></li>
+      <li><span class="t">Mouse</span><span class="d"><code>MO(_MOUSE)</code>; kinetic-curve cursor (<code>MK_KINETIC_SPEED</code>, base 6000 px/s — ramps up while held). <kbd>LMB</kbd>+<kbd>RMB</kbd> combo = middle click.</span></li>
+      <li><span class="t">WM chord</span><span class="d">Every WM key clears held mods, taps <b>Alt+Win</b>, waits ~30 ms, taps one key. Set FancyWM's activation hotkey to Alt+Win to match.</span></li>
+      <li><span class="t">Escapes</span><span class="d"><code>TO(_ALPHA)</code> = <b>Base</b> on the WM layer (hard exit). Tap <b>Nav / Sym / Fn / WM</b> to toggle-lock a layer, hold for momentary.</span></li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    Generated from <code>custom_keys.c</code> · <code>td_declarations.c</code> · <code>config.h</code>. · <a href="index.html">Overview</a>
+  </div>
+</main>
+
+<script src="keymap.js"></script>
+</body>
+</html>

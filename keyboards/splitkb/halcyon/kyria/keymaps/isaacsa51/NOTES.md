@@ -40,7 +40,7 @@ File paths are relative to this keymap folder unless noted.
 - [x] **[done]** Smart-tilde rewrite (`custom_keys/custom_keys.c`): fixed the `default` case (was `tap_code()` on a 16-bit value); non-accent keys now pass through untouched instead of emitting `'`+junk; a modifier held between `TILDE` and the letter passes through without consuming the latch (so `TILDE`, Shift, vowel -> uppercase accent); collapsed the byte-identical WIN/MAC vowel branch; `TILDE`+Space is now an explicit literal apostrophe. `n -> ñ` OS split is unchanged (tested `ed74715`).
 - [x] **[done]** Smart-tilde English apostrophe — `TILDE` + `s l m d r t c` now emits a literal `'` + letter (`McDonald's`, `I'll`, `I'm`, `I'd`, `you're`, `don't`, `c'mon`). Done via `'`+space (dead acute resolved to `'`) so `'`+`c` doesn't come out as `ç` on US-International. Other consonants still fall through `default` (latch dropped, key typed as-is).
 - [x] **[done]** Smart-tilde timeout — `smart_tilde_timer` (`timer_read32()`) set when the latch is armed (both `case TILDE:` and `dance_cmd_finished` double-tap); at the next keypress, if `> SMART_TILDE_TIMEOUT_MS` (1000) elapsed the latch is dropped and the key types normally. No `deferred_exec` / rules.mk change needed — the check runs at the next keypress, which is the only moment it matters.
-- [x] **[done]** `oshtsf` / `oshtct` single-tap — now `set_oneshot_mods(MOD_BIT(KC_LSFT))` / `MOD_BIT(KC_LCTL))`, a real one-shot that applies to the next key. Double-tap (hold-until-release) branch unchanged.
+- [x] **[done]** `OSHTSF` / `OSHTCT` on the `_NAV` right thumb rebuilt from tap dances (`TD_OSHTSF`/`TD_OSHTCT`) to custom keycodes `OS_SFT` / `OS_CTL` (`custom_keys.c`). **Tap** = one-shot mod (`add_oneshot_mods`, stacks). **Hold** = real Shift/Ctrl that engages the instant another key is pressed (a `record->event.pressed` hook promotes `*_down` → `register_code` + `*_held`), released on key-up — no tapping-term latency. Removed the two TD enum entries, `tap_dance_actions[]` rows, `oshtsf_*`/`oshtct_*` + `td_hold_state_t` from `td_declarations.*`, and the `TD(TD_OSHT*)` cases in the RGB indicator + `keycode_strings.c`. The `_ALPHA`/`_WMSEL` plain `OSHFT` (`OSM(MOD_LSFT)`) is untouched.
 - **[decide]** The two include fixes are the alternative to switching local `qmk_firmware` to `splitkb/vial-qmk`. Currently staying on mainline + patching.
 
 ---
@@ -53,7 +53,7 @@ _(none open)_
 
 ## Dead code / cleanup
 
-- [ ] **[cleanup]** `combos/combos.c` — `copy/paste/cut_combo` arrays defined, `key_combos[]` + `process_combo_event` fully commented, `combos.h` is 100% comment; `rules.mk` still compiles it. Live table is in `keymap.c` (`// TODO: Migrate...` at line 108). Pick one home.
+- [x] **[done]** `key_combos[]` + `combo_should_trigger()`/`get_combo_term()` moved from `keymap.c` into `combos/combos.c` (the old dead `copy/paste/cut_combo` scaffolding and empty `combos.h` were deleted). The array's real definition has to stay visible to QMK's keymap-introspection `ARRAY_SIZE(key_combos)` check, so `combos.c` is no longer in `rules.mk`'s `SRC` — it's pulled in via `INTROSPECTION_KEYMAP_C = combos/combos.c` instead (textual `#include`, same trick `KEYMAP_C` uses for `keymap.c` itself). The shared `HM_*` home-row mod-tap aliases moved to `layers.h` so both files see the identical keycodes.
 - [ ] **[cleanup]** Dead keycodes in `enum custom_keycodes`: `DRAG_S`, `DEL_LINE` (never handled; drag-scroll is layer-driven via `set_scrolling`). Keep `DEL_LINE` if the OS-aware editing feature will use it.
 - [x] **[done]** `get_base_keycode` (`custom_keys/custom_keys.c`) — was a hand-maintained 8-entry switch; now `IS_QK_MOD_TAP(kc) ? QK_MOD_TAP_GET_TAP_KEYCODE(kc) : kc`. Handles any mod-tap on any layer, so the smart-tilde no longer breaks when a home-row mod moves.
 - [ ] **[cleanup]** Stale header advice (`keymap.c` `[ Dev tips ]`) — "running out of RAM / PROGMEM / disable RGB" is AVR guidance; rev4 is RP2040 (264 KB).
@@ -69,14 +69,21 @@ _(none open)_
 - [ ] **[decide]** `_SYM` vs combos — SYM is a complete superset fallback (adds `& % ~` backtick over every combo symbol). Legit safety net; question is whether it earns a dedicated `TT` toggle.
 - [x] **[done]** `_WM` rebuilt for **FancyWM** (`github.com/FancyWM/fancywm`). Every key = `fancywm()` helper: **clears all held mods** (homerow / one-shot / HYPER-MEH), sends a clean **`Alt+Win`** activation chord, waits `FANCYWM_ACTIVATION_MS` (30), sends the secondary, restores mods. (Set FancyWM's activation hotkey to `Alt + Win` in its settings to match.) `WM_L/R/U/D` = move focus; hold `WM_MOVE` -> move window (Ctrl+dir), `WM_SWAP` -> swap (Shift+dir); `WM_MOVE` also turns `WM_1-9`/`D<`/`D>` into move-to-desktop. Plus panels H/V/S, float, promote, refresh, toggle-manager, show-desktop, cancel, desktop prev/left/right. `WM_MOVE`/`WM_SWAP` on the right thumb (row 4). 27 `WM_*` keycodes; display labels in `keycode_strings.c`.
 - [x] **[done]** Every non-WM key on `_WM` is now `KC_NO` (was `_______`) — the transparent thumb keys were leaking `_ALPHA`'s `OALT`/`HYPER`/`MEH` into the chord, which is why the activation was landing as `Alt+Win` instead of `Shift+Win`. Only `WM` (layer toggle, left thumb) stays live.
+- [x] **[done]** `_WM` desktop keys `D1..D9` follow the `_NAV` numpad order — `7 8 9` / `4 5 6` / `1 2 3` top-to-bottom (was `1 2 3` / `4 5 6` / `7 8 9`).
 - [ ] **[note]** `fancywm()` blocks the scan ~35 ms per press (`wait_ms`). Bump `FANCYWM_ACTIVATION_MS` if FancyWM still drops actions, lower it if laggy. Old GlazeWM/AeroSpace `A(KC_n)` bindings are gone.
+- [x] **[done]** `_WMSEL` — desktop picker reachable from any alpha layer without going to `_WM`. **Two activators**, pick with whichever hand is free:
+  - hold **Z+X+C+D** (left bottom, `wmsel_combo_l` -> `WM_SEL_L`) -> pick with the **right** hand, `_NAV` **numpad order** (D7 D8 D9 / D4 D5 D6 / D1 D2 D3 on the right 3 columns).
+  - hold **H+,+.+/** (right bottom, `wmsel_combo_r` -> `WM_SEL_R`) -> pick with the **left** hand, **mirror-pair order** (bottom Z X C D = D4 D3 D2 D1, home A R S T = D8 D7 D6 D5, G = D9).
+  - `WM_SEL_L/R` set `wmsel_side` (1/2) + `layer_on(_WMSEL)`; both picker layouts live on the one `_WMSEL` layer. RGB reads `wmsel_side` and lights **only the active side**: held cluster white, picker desktops green, that hand's OSM Shift blue.
+- [x] **[done]** Move-window from `_WMSEL` — one-shot Shift (`OSHFT`) on **both inner thumbs** (you use the picking hand's). Tap it, then a desktop key -> `WM_1..WM_9` handler sees `get_oneshot_mods() & MOD_MASK_SHIFT` -> FancyWM `Shift+N` (move focused window to desktop N). The 9 `WM_n` cases are one `case WM_1 ... WM_9` range, `move = wm_mode==1 || shift`.
+- [ ] **[note]** Both `wmsel_combo_*` get `get_combo_term` = 80 ms (4 keys can't land in 30). Each overlaps 2-key symbol combos — `Z+X+C+D` covers `{` (X+C) and `}` (C+D); `H+,+.+/` covers `<` (H+`,`) and `>` (`,`+`.`). Slap the four as one chord; an uneven roll may emit a stray bracket. If it bites, reshape a cluster (add `V` / `K`, drop one).
 
 ---
 
 ## OS-awareness infrastructure
 
 - [ ] **[decide]** `os_detection/` does no detection — it's a manual `TG_OS` toggle of a global. Fine choice, but the name lies; QMK's real `OS_DETECTION` exists.
-- [ ] **[bug/QoL]** `current_os` not persisted -> resets to Windows every unplug. One `eeconfig` byte fixes it.
+- [x] **[done]** `current_os` now persists via `eeconfig_read_user()`/`eeconfig_update_user()` in `os_detection/os_layer.c` (`os_layer_init()` restores it in `keyboard_post_init_user()`, `os_layer_save()` is called from the `TG_OS` handler). `eeconfig_init_user()` seeds a fresh/reset EEPROM back to `OS_WIN`.
 - [ ] **[cleanup]** `current_os` re-declared `extern` in `os_detection/os_layer.h` and `tap_dance/td_declarations.h:9` — the second should just include the first.
 - [x] **[done]** `tap_os(mac_kc, win_kc)` helper added in `custom_keys.c` — minimal version of alvaro-prieto's `osKeys[][2]` table.
 
@@ -90,7 +97,7 @@ _(none open)_
 - [x] **[done]** Dropped `WMOD` (the held word-modifier). Word motion is now on the `_NAV` arrow-row flanks: `KC_HOME` -> `U_WORDL`, `KC_END` -> `U_WORDR` (OS-aware, self-contained). Word *select* = tap `OSHTSF` first (one-shot Shift stacks onto the `S(C(KC_LEFT))` the keycode sends).
 - [x] **[done]** `_NAV` right thumb order `OSHTCT, MO(_MOUSE), OSHTSF` — the freed WMOD slot now holds the momentary `_MOUSE` layer; Shift/Ctrl one-shots flank it. `SELWORD` (tap to extend) is the other selection path.
 - [x] **[done]** New combo: whole left homerow **A+R+S+T** -> `U_DWORD` (OS-aware delete word). `homerow_dword_combo` in `keymap.c`, gated to the alpha layers by the existing `combo_should_trigger`; fires on the same physical keys on `_CANARIA` / `_CRATE` via `COMBO_ONLY_FROM_LAYER 0`. Wider window (`get_combo_term` -> 80 ms, needs `COMBO_TERM_PER_COMBO` in `config.h`) since 4 keys can't land inside the 30 ms symbol-combo window.
-- [ ] **[note]** `current_os` defaults to `OS_WIN` and doesn't persist (see the os_detection item). On macOS, press `TG_OS` after every reconnect or the OS-aware keys send the Windows combo.
+- [x] **[done]** `current_os` defaults to `OS_WIN` and now persists across replug/reboot (see the os_detection item above).
 - [ ] **[decide]** `U_DLINE` behaviour is asymmetric — mac deletes to line start, win clears the line contents. Both editor-dependent; tune per real usage.
 - [ ] **[note]** `_NAV` media row (`MPRV/MPLY/MNXT/MUTE`) untouched for now — relocate to `_ADJUST`/`_FUNCTION` only if those slots are needed later.
 - [ ] **[note]** Works on all layers via `combo_should_trigger` for combos, but these are plain keycodes so they work everywhere regardless. Test both OS states after flashing.
@@ -111,7 +118,8 @@ _(none open)_
 - [x] **[done]** Held from `_NAV` — `MO(_MOUSE)` on the middle-right thumb (the old `WMOD` slot). `#define MOUSE MO(_MOUSE)` alias; `_MOUSE` appended to `layers.h` (index 8, above `_NAV` so `MO` wins).
 - [x] **[done]** Layout mirrors the `_NAV` arrow inverted-T. **Left hand** = scroll wheel T (`MS_WHLU` on the middle-finger column, `MS_WHLL`/`MS_WHLD`/`MS_WHLR` on the row below — mirror of the right-hand arrow columns). **Right hand** = pointer move on the exact `_NAV` arrow keys (`MS_UP` / `MS_LEFT` / `MS_DOWN` / `MS_RGHT`), with `MS_BTN1` / `MS_BTN2` in the `U_WORDL` / `U_WORDR` slots above pointer-left / -right. Everything else `_______` (falls through to `_NAV`).
 - [x] **[done]** `MOUSEKEY_ENABLE = yes` added to `rules.mk` (`MS_*` keycodes). `MS_*` + `MO(_MOUSE)` labels added to `display/keymap/keycode_strings.c`.
-- [x] **[done]** Acceleration disabled — `MK_3_SPEED` in `config.h` (constant-speed mousekeys). With no `MS_ACL*` keys on the keymap it's a single fixed speed: `MK_C_OFFSET_UNMOD 10` px / `MK_C_INTERVAL_UNMOD 16` ms (stock is 16/16). Lower the offset / raise the interval to slow further. Wheel left at stock (`MK_W_*_UNMOD`, 1 notch / 40 ms).
+- [x] **[done]** Acceleration disabled — `MK_3_SPEED` constant mode in `config.h`. No `MS_ACL*` keys, so `*_UNMOD` is the only speed: `MK_C_OFFSET_UNMOD 120` px / `MK_C_INTERVAL_UNMOD 6` ms ≈ 20000 px/s (was 32/12 → 64/8 → bumped again). `OFFSET` is near its 127 hard cap; drop `INTERVAL` toward ~4 for a touch more. If it's *still* slow at this point, `MK_3_SPEED` isn't taking effect (check for an override or the Cirque combined-report path). Wheel at stock (1 notch / 40 ms).
+- [x] **[done]** `_MOUSE` middle click — `mmb_combo` (`BTN1`+`BTN2` at once) -> `MS_BTN3`. Defined with the `_ALPHA` keycodes under those positions (`KC_L`/`KC_Y`, top row R2/R4) because of `COMBO_ONLY_FROM_LAYER 0`; `combo_should_trigger` gates it to `_MOUSE` only (`combo->keys == mmb_combo`).
 - [ ] **[note]** Image also had browser back/fwd, volume, and second-hand mouse buttons — left off; add on the free `_MOUSE` columns if wanted.
 
 ---
@@ -124,6 +132,10 @@ _(none open)_
 - [x] **[done]** Everything else is blanked — a `for (i = led_min..led_max) rgb_matrix_set_color(i, RGB_BLACK)` pass runs before the per-key colours, so unmapped keys and underglow go dark instead of showing the animation. Delete that loop to keep the animation underneath. Palettefx keeps running (state advances); its output is just overwritten each frame.
 - [ ] **[note]** Tune `_NAV` by editing the `switch` cases; change a flat-layer colour in the `layer != _NAV` block; add another layer by extending the guard `if` + the colour `if/else` chain.
 - [x] **[done]** RGB notification flash — `rgb_notify(r,g,b,blinks)` in `custom_keys.c` blinks every LED over any layer (state machine driven by `rgb_matrix_indicators_advanced_user`, `NOTIFY_PHASE_MS 110`). Wired: `TG_OS` -> green ×2; `caps_word_set_user(true)` and the Caps-Lock tap in `td_caps_finished` -> red ×3. OS mode stays manual/non-persistent as before, just visible now.
+- [x] **[done]** Base animation = **PaletteFx** (`getreuer/palettefx`, wired via `keymap.json` + `rgb_matrix_user.inc`; all effects + 16 palettes compiled). Default = **Reactive** effect + **Bad Wolf** palette.
+  - `config.h`: `#define RGB_MATRIX_KEYPRESSES` (the module only registers `PALETTEFX_REACTIVE` when key tracking is on — without it the enum doesn't exist), `RGB_MATRIX_DEFAULT_MODE = RGB_MATRIX_CUSTOM_PALETTEFX_REACTIVE`, `RGB_MATRIX_DEFAULT_HUE = RGB_MATRIX_HUE_STEP * 2` (hue -> palette index; badwolf = 2).
+  - `keyboard_post_init_user()` in `keymap.c` re-forces mode + palette with `*_noeeprom` on **every plug-in** — `RGB_MATRIX_DEFAULT_*` only apply to a fresh EEPROM, and the stale EEPROM mode is why "can't put a palette effect". Runtime `RM_NEXT` still works for a session but resets on replug.
+  - Shows on `_ALPHA`/`_CANARIA`/`_CRATE`/`_GAME`/`_WM`; the indicator layers blank it. `RM_HUEU`/`RM_HUED` on `_ADJUST` cycles palettes.
 
 ---
 

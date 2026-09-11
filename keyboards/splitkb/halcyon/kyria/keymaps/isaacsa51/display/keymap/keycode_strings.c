@@ -111,10 +111,13 @@ const char* get_keycode_string_hlc(uint16_t keycode) {
         case U_PASTE: return "PST";
         case ALTTAB:  return "ATB";
         case SELWORD: return "SELW";
+        case OS_SFT:  return "SF*";
+        case OS_CTL:  return "CT*";
 
         // FancyWM
         case WM_L: return "<";  case WM_R: return ">";  case WM_U: return "^";  case WM_D: return "v";
         case WM_MOVE: return "MOV"; case WM_SWAP: return "SWP";
+        case WM_SEL_L: case WM_SEL_R: return "WSEL";
         case WM_PANH: return "PNH"; case WM_PANV: return "PNV"; case WM_PANS: return "PNS";
         case WM_FLOAT: return "FLT"; case WM_PROMO: return "PRO"; case WM_REFR: return "RFR";
         case WM_TOGL: return "TGL"; case WM_SHDSK: return "DSK"; case WM_CANC: return "ESC";
@@ -130,8 +133,6 @@ const char* get_keycode_string_hlc(uint16_t keycode) {
 
         // Tap dances
         case TD(TD_CMD_TILDE): return "CMD";
-        case TD(TD_OSHTSF):    return "SF*";
-        case TD(TD_OSHTCT):    return "CT*";
         case TD(TD_CAPS):      return "CAPS";
 
         // Layer switches

@@ -84,15 +84,60 @@ static void fancywm(uint16_t secondary) {
 // 0 = focus, 1 = move (Ctrl+dir), 2 = swap (Shift+dir). Set by WM_MOVE / WM_SWAP.
 static uint8_t wm_mode = 0;
 
+// _WMSEL: 0 = inactive, 1 = left cluster held (pick with the right hand),
+// 2 = right cluster held (pick with the left). Set by WM_SEL_L / WM_SEL_R.
+static uint8_t wmsel_side = 0;
+
+// _NAV right-thumb OS_SFT / OS_CTL: *_down while the key is held, *_held once it
+// has been promoted to a real modifier by another keypress.
+static bool osmod_sft_down = false, osmod_sft_held = false;
+static bool osmod_ctl_down = false, osmod_ctl_held = false;
+
 static void wm_dir(uint16_t focus_kc, uint16_t move_kc, uint16_t swap_kc) {
     fancywm(wm_mode == 1 ? move_kc : wm_mode == 2 ? swap_kc : focus_kc);
 }
 
 bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
+    // _NAV right-thumb mods: tap -> one-shot (stacks); hold -> real modifier the
+    // instant another key is pressed (no tapping-term wait).
+    if (keycode == OS_SFT || keycode == OS_CTL) {
+        uint8_t kc    = (keycode == OS_SFT) ? KC_LSFT : KC_LCTL;
+        bool   *down  = (keycode == OS_SFT) ? &osmod_sft_down : &osmod_ctl_down;
+        bool   *held  = (keycode == OS_SFT) ? &osmod_sft_held : &osmod_ctl_held;
+        if (record->event.pressed) {
+            *down = true;
+            *held = false;
+        } else {
+            *down = false;
+            if (*held) { unregister_code(kc); *held = false; }
+            else       { add_oneshot_mods(MOD_BIT(kc)); }
+        }
+        return false;
+    }
+    // Any other keypress while a thumb mod is held -> promote it to a real hold.
+    if (record->event.pressed) {
+        if (osmod_sft_down && !osmod_sft_held) { register_code(KC_LSFT); osmod_sft_held = true; }
+        if (osmod_ctl_down && !osmod_ctl_held) { register_code(KC_LCTL); osmod_ctl_held = true; }
+    }
+
     // FancyWM held modes: switch the direction / desktop keys to move or swap.
     if (keycode == WM_MOVE) { wm_mode = record->event.pressed ? 1 : 0; return false; }
     if (keycode == WM_SWAP) { wm_mode = record->event.pressed ? 2 : 0; return false; }
+
+    // Z+X+C+D (left) or H+,+.+/ (right) combo -> hold the FancyWM desktop picker
+    // (_WMSEL) while the chord is held. wmsel_side tells the RGB which hand holds
+    // (1 = left cluster -> pick with the right, 2 = right cluster -> pick left).
+    if (keycode == WM_SEL_L || keycode == WM_SEL_R) {
+        if (record->event.pressed) {
+            wmsel_side = (keycode == WM_SEL_L) ? 1 : 2;
+            layer_on(_WMSEL);
+        } else {
+            wmsel_side = 0;
+            layer_off(_WMSEL);
+        }
+        return false;
+    }
 
     if (record->event.pressed) {
         switch (keycode) {
@@ -103,6 +148,7 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
 
             case TG_OS:
                 current_os = (current_os == OS_MAC) ? OS_WIN : OS_MAC;
+                os_layer_save();            // persist across replug/reboot
                 rgb_notify(0, 255, 0, 2);   // flash green twice on OS change
                 return false;
 
@@ -146,15 +192,15 @@ bool process_record_user_custom(uint16_t keycode, keyrecord_t *record) {
             case WM_DL:   fancywm(wm_mode == 1 ? S(KC_Z) : KC_Z); return false;
             case WM_DR:   fancywm(wm_mode == 1 ? S(KC_X) : KC_X); return false;
 
-            case WM_1: fancywm(wm_mode == 1 ? S(KC_1) : KC_1); return false;
-            case WM_2: fancywm(wm_mode == 1 ? S(KC_2) : KC_2); return false;
-            case WM_3: fancywm(wm_mode == 1 ? S(KC_3) : KC_3); return false;
-            case WM_4: fancywm(wm_mode == 1 ? S(KC_4) : KC_4); return false;
-            case WM_5: fancywm(wm_mode == 1 ? S(KC_5) : KC_5); return false;
-            case WM_6: fancywm(wm_mode == 1 ? S(KC_6) : KC_6); return false;
-            case WM_7: fancywm(wm_mode == 1 ? S(KC_7) : KC_7); return false;
-            case WM_8: fancywm(wm_mode == 1 ? S(KC_8) : KC_8); return false;
-            case WM_9: fancywm(wm_mode == 1 ? S(KC_9) : KC_9); return false;
+            case WM_1 ... WM_9: {
+                // Move window instead of switching when WM_MOVE is held (wm_mode)
+                // or Shift is active (the _WMSEL one-shot Shift) -> FancyWM Shift+N.
+                bool move = wm_mode == 1
+                            || ((get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT);
+                uint16_t n = KC_1 + (keycode - WM_1);   // KC_1..KC_9 are consecutive
+                fancywm(move ? (QK_LSFT | n) : n);
+                return false;
+            }
         }
     } else {
         if (keycode == CMD) {
@@ -277,7 +323,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 #ifdef RGB_MATRIX_ENABLE
 // _NAV = per-key colours by function. _SYM / _FUNCTION / _ADJUST / _MOUSE = flat
-// wash over every active key (green / yellow / white / magenta). Plus the flash.
+// wash (green / yellow / white / magenta). _WMSEL = held cluster white, picker
+// desktops green, picker OSM Shift blue (only the active side lit). Plus the flash.
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // Notification flash — solid colour blink over the whole board, any layer.
     if (notify_blinks_left > 0) {
@@ -298,7 +345,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
 
     uint8_t layer = get_highest_layer(layer_state);
-    if (layer != _NAV && layer != _SYM && layer != _FUNCTION && layer != _ADJUST && layer != _MOUSE) return false;
+    if (layer != _NAV && layer != _SYM && layer != _FUNCTION && layer != _ADJUST
+        && layer != _MOUSE && layer != _WMSEL) return false;
 
     // Blank everything in this batch (keys + underglow) so only the mapped keys
     // below light up. Drop this loop to keep the running animation underneath.
@@ -312,6 +360,27 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             if (led == NO_LED || led < led_min || led >= led_max) continue;
 
             uint16_t kc = keymap_key_to_keycode(layer, (keypos_t){col, row});
+
+            // _WMSEL: light only the side in play. wmsel_side 1 = left cluster
+            // held -> right hand picks; 2 = right cluster held -> left hand picks.
+            // Held cluster = white, picker desktops = green, picker's OSM Shift = blue.
+            if (layer == _WMSEL) {
+                bool on_left = row < MATRIX_ROWS / 2;
+                bool pick_hand = (wmsel_side == 1 && !on_left) || (wmsel_side == 2 && on_left);
+                uint16_t base = keymap_key_to_keycode(_ALPHA, (keypos_t){col, row});
+                bool held =
+                    (wmsel_side == 1 && (base == KC_Z || base == KC_X || base == KC_C || base == KC_D)) ||
+                    (wmsel_side == 2 && (base == KC_H || base == KC_COMM || base == KC_DOT || base == KC_SLSH));
+
+                if (held) {
+                    rgb_matrix_set_color(led, RGB_WHITE);
+                } else if (pick_hand && kc >= WM_1 && kc <= WM_9) {
+                    rgb_matrix_set_color(led, RGB_GREEN);
+                } else if (pick_hand && kc == OSM(MOD_LSFT)) {
+                    rgb_matrix_set_color(led, RGB_BLUE);
+                }
+                continue;
+            }
 
             // _SYM / _FUNCTION / _ADJUST / _MOUSE: flat wash over every non-blank key.
             if (layer != _NAV) {
@@ -339,7 +408,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                     rgb_matrix_set_color(led, RGB_YELLOW); break;
                 case SELWORD:                                            // select word
                     rgb_matrix_set_color(led, RGB_CYAN);   break;
-                case TD(TD_OSHTSF): case TD(TD_OSHTCT):                  // one-shot mods
+                case OS_SFT: case OS_CTL:                                // thumb mods
                     rgb_matrix_set_color(led, RGB_WHITE);  break;
                 default:
                     break;

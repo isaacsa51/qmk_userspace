@@ -142,6 +142,4 @@ Efficiency: Home row mods, One Shot Layers, Combos, and well-utilized Thumb Clus
 Dev/Productivity Focus: Entire layer for development shortcuts, tiling shortcuts, and quick moves.
 
 ## To Do
-1. Migrate combos to a separate file.
-
-2. Complete the _GIT layer.
+1. Complete the _GIT layer.

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyria Keymap — isaacsa51</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem('kmtheme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<nav class="topnav"><div class="inner">
+  <a class="brand" href="index.html"><span>Kyria</span> Keymap</a>
+  <a class="nav on" href="index.html">Overview</a>
+  <a class="nav" href="layers.html">Layers</a>
+  <a class="nav" href="combos.html">Combos</a>
+  <a class="nav" href="behaviour.html">Behaviour</a>
+  <a class="nav" href="build.html">Build</a>
+  <button class="theme" data-theme-toggle title="Toggle light / dark">◐</button>
+</div></nav>
+
+<main class="wrap">
+  <p class="eyebrow">Keymap reference · Halcyon Kyria rev4 · isaacsa51</p>
+  <h1><span>Kyria</span> Keymap</h1>
+  <p class="lead">A split 3×6+5 columnar board — Colemak-DH base with a Spanish-tuned
+  alternate, home-row mods, an iconic symbol-combo layer, OS-aware editing that
+  follows a manual Win/Mac toggle, a FancyWM control layer, and PaletteFx RGB.</p>
+
+  <div class="hero">
+    <div id="hero"></div>
+    <div class="hero-leg">
+      <span><i class="g-mod"></i>mod</span>
+      <span><i class="g-layer"></i>layer</span>
+      <span><i class="g-custom"></i>custom / tap-dance</span>
+      <span><i class="g-trans"></i>transparent</span>
+      <span>green bar = home-row mod · small text = Nav · Sym · Fn</span>
+    </div>
+  </div>
+
+  <div class="meta">
+    <span>Bases: <b>Colemak-DH</b> · <b>Crate</b> (Spanish) · <b>Canaria</b> — swapped at runtime on the Adjust layer.</span>
+    <span>Home-row mods <b>ALT GUI SHFT CTRL</b> pinky→index, mirrored. Chordal Hold + PERMISSIVE_HOLD, <b>TAPPING_TERM 200</b>.</span>
+    <span>OS mode <b>Windows</b> by default. <b>TG_OS</b> flips Win ⇄ Mac and persists across replug/reboot.</span>
+    <span>Host layout assumed: <b>US-International</b> (dead keys for accents).</span>
+    <span>Combos fire <b>by position</b> — same physical keys on every base. 30 ms window, 80 ms for the 4-key gestures.</span>
+    <span>RGB: PaletteFx <b>Reactive</b> effect + <b>Polarized</b> palette, forced on every plug-in.</span>
+    <span>Mouse: kinetic speed curve, ramps up while held (MK_KINETIC_SPEED, base 6000 px/s).</span>
+  </div>
+
+  <div class="homelinks">
+    <a href="layers.html"><b>All layers</b><span>The 8 overlay layers drawn out — Nav, Sym, Function, Adjust, WM, Game, Mouse, WM picker.</span></a>
+    <a href="combos.html"><b>Combos</b><span>The gestural cipher mapped onto the board, plus every pair and the full-row gestures.</span></a>
+    <a href="behaviour.html"><b>Behaviour</b><span>Tap dances, thumb mods, smart tilde, the OS-aware key table, and RGB.</span></a>
+    <a href="build.html"><b>Build &amp; flash</b><span>Per-half compile commands and the RP2040 UF2 flash steps.</span></a>
+  </div>
+
+  <div class="foot">
+    Generated from <code>keymap.c</code> · <code>custom_keys.c</code> · <code>config.h</code>. Keep in sync when those change.
+  </div>
+</main>
+
+<script src="keymap.js"></script>
+<script>KM.renderHero('hero');</script>
+</body>
+</html>

@@ -65,7 +65,6 @@
 
 #include QMK_KEYBOARD_H
 #include "custom_keys/custom_keys.h"
-#include "combos/combos.h"
 #include "os_detection/os_layer.h"
 #include "tap_dance/td_declarations.h"
 #include "layers.h"
@@ -83,16 +82,6 @@
 #define GAME     TG(_GAME)
 #define MOUSE    MO(_MOUSE)
 
-// Homerow mods — pinky..index: Alt, GUI, Shift, Ctrl (mirrored on the right hand).
-#define HM_A LALT_T(KC_A)
-#define HM_R LGUI_T(KC_R)
-#define HM_S LSFT_T(KC_S)
-#define HM_T LCTL_T(KC_T)
-#define HM_N LCTL_T(KC_N)
-#define HM_E LSFT_T(KC_E)
-#define HM_I LGUI_T(KC_I)
-#define HM_O LALT_T(KC_O)
-
 // _CRATE / _CANARIA home row: different letters under the same fingers.
 #define HC_C LALT_T(KC_C)   // pinky  -> Alt   (_CRATE left, _CANARIA right)
 #define HC_A LSFT_T(KC_A)   // middle -> Shift (_CRATE left)
@@ -105,91 +94,15 @@
 
 // Aliases for tap dance
 #define TDCMD  TD(TD_CMD_TILDE)
-#define OSHTSF TD(TD_OSHTSF)
-#define OSHTCT TD(TD_OSHTCT)
 #define CAPS   TD(TD_CAPS)
 
-// TODO: Migrate these combos to combos.c
-const uint16_t PROGMEM question_combo[] = {HM_N, KC_U, COMBO_END};
-const uint16_t PROGMEM equal_combo[] = {HM_S, HM_T, COMBO_END};
-const uint16_t PROGMEM combo_dash[] = {HM_R, HM_S, COMBO_END};
-const uint16_t PROGMEM combo_colon[] = {HM_N, HM_E, COMBO_END};
-const uint16_t PROGMEM combo_pipe[] = {KC_M, HM_N, COMBO_END};
-const uint16_t PROGMEM combo_quote[] = {HM_E, HM_I, COMBO_END};
-const uint16_t PROGMEM combo_asterisk[] = {KC_U, HM_E, COMBO_END};
-const uint16_t PROGMEM combo_bslash[] = {HM_E, KC_DOT, COMBO_END};
-const uint16_t PROGMEM combo_exclaim[] = {KC_F, HM_T, COMBO_END};
-const uint16_t PROGMEM combo_dollar[] = {HM_T, KC_P, COMBO_END};
-const uint16_t PROGMEM combo_hash[] = {KC_F, HM_S, COMBO_END};
-const uint16_t PROGMEM combo_bracket_l[]  = {KC_W, KC_F, COMBO_END}; 
-const uint16_t PROGMEM combo_bracket_r[]  = {KC_F, KC_P, COMBO_END};
-const uint16_t PROGMEM combo_brace_l[]    = {KC_X, KC_C, COMBO_END};
-const uint16_t PROGMEM combo_brace_r[]    = {KC_C, KC_D, COMBO_END};
-const uint16_t PROGMEM combo_plus[]       = {HM_T, KC_G, COMBO_END};
-const uint16_t PROGMEM combo_at[]         = {KC_W, HM_R, COMBO_END};
-const uint16_t PROGMEM combo_underscore[] = {HM_S, KC_D, COMBO_END};
-const uint16_t PROGMEM combo_paren_l[]    = {KC_L, KC_U, COMBO_END};
-const uint16_t PROGMEM combo_paren_r[]    = {KC_U, KC_Y, COMBO_END};
-const uint16_t PROGMEM combo_lt[]         = {KC_H, KC_COMM, COMBO_END};
-const uint16_t PROGMEM combo_gt[]         = {KC_COMM, KC_DOT, COMBO_END};
-const uint16_t PROGMEM combo_caret[]      = {KC_J, KC_M, COMBO_END};
-
-// Whole left homerow (A R S T positions) at once -> OS-aware delete word.
-// COMBO_ONLY_FROM_LAYER 0 resolves these to the _ALPHA keycodes on every alpha
-// layer, so it fires on the same physical keys on _CANARIA / _CRATE too.
-const uint16_t PROGMEM homerow_dword_combo[] = {HM_A, HM_R, HM_S, HM_T, COMBO_END};
-
-combo_t key_combos[] = {
-    COMBO(equal_combo, KC_EQUAL),           // =
-    COMBO(question_combo, LSFT(KC_SLASH)),  // ?
-    COMBO(combo_bracket_l,  KC_LBRC),  // [
-    COMBO(combo_bracket_r,  KC_RBRC),  // ]
-    COMBO(combo_dash,       KC_MINS),  // -
-    COMBO(combo_brace_l,    KC_LCBR),  // {
-    COMBO(combo_brace_r,    KC_RCBR),  // }
-    COMBO(combo_plus,       KC_PLUS),  // +
-    COMBO(combo_at,         KC_AT),    // @
-    COMBO(combo_underscore, KC_UNDS),  // _
-    COMBO(combo_paren_l,    KC_LPRN),  // (
-    COMBO(combo_paren_r,    KC_RPRN),  // )
-    COMBO(combo_colon,      KC_COLN),  // :
-    COMBO(combo_pipe,       KC_PIPE),  // |
-    COMBO(combo_lt,         KC_LT),    // <
-    COMBO(combo_gt,         KC_GT),    // >
-    COMBO(combo_quote,      KC_DQUO),  // "
-    COMBO(combo_asterisk,   KC_ASTR),  // asterisk
-    COMBO(combo_bslash,     KC_BSLS),  // inverted slash
-    COMBO(combo_caret,      KC_CIRC),  // ^
-    COMBO(combo_exclaim,    KC_EXLM),  // !
-    COMBO(combo_dollar,     KC_DLR),   // $
-    COMBO(combo_hash,       KC_HASH),  // #
-    COMBO(homerow_dword_combo, U_DWORD),  // A+R+S+T -> delete word (OS-aware)
-};
-
-// With COMBO_ONLY_FROM_LAYER the combos fire on every layer; restrict them to
-// the alpha layers so number/symbol rolls on NAV/SYM/etc. don't emit combos.
-bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
-    switch (get_highest_layer(layer_state)) {
-        case _ALPHA:
-        case _CANARIA:
-        case _CRATE:
-            return true;
-        default:
-            return false;
-    }
-}
-
-// The 4-key homerow gesture needs a wider window than the tight 2-key symbol
-// combos — 4 keys can't realistically land within COMBO_TERM (30 ms).
-uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
-    if (combo->keys == homerow_dword_combo) return 80;
-    return COMBO_TERM;
-}
+// _NAV right thumb: tap = one-shot mod (stacks), hold = held mod (engages on the
+// next keypress). Custom keycodes, handled in custom_keys.c.
+#define OSHTSF OS_SFT
+#define OSHTCT OS_CTL
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_CMD_TILDE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_cmd_finished, dance_cmd_reset),
-    [TD_OSHTSF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, oshtsf_finished, oshtsf_reset),
-    [TD_OSHTCT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, oshtct_finished, oshtct_reset),
     [TD_CAPS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_caps_finished, td_caps_reset),
 };
 
@@ -286,7 +199,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Nav Layer: Media, number & navigation
  *
  * Declarations:
- *    - OSHTSF / OSHTCT: 1 Tap = one-shot / 2 Tap = hold (Shift / Ctrl).
+ *    - OSHTSF / OSHTCT: tap = one-shot (Shift / Ctrl, stackable); hold = held mod
+ *      that engages on the next keypress (no tapping-term wait).
  *    - W< / W>: word left / right — Ctrl+arrow (Windows) / Alt+arrow (macOS). OSHTSF first = word select.
  *    - Left cluster is OS-aware: DelLn / DelWrd / real Bkspc / Cut / Copy / Paste.
  *
@@ -388,34 +302,55 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
 /*
- * Windows Manager: FancyWM (https://github.com/FancyWM/fancywm). Every key taps the
- * Alt+Win activation chord, then a secondary key. Hold WM_MOVE / WM_SWAP to turn the
- * L/R/U/D keys into "move window" / "swap window", and the 1-9 keys into "move to desktop".
- * Declarations:
- *   - L/R/U/D : move focus (default) / move window (WM_MOVE) / swap window (WM_SWAP)
- *   - PANH/PANV/PANS : create horizontal / vertical / stack panel
- *   - FLOAT : toggle floating   PROMO : pull window up   REFR : refresh   TOGL : manager on/off
- *   - SHDSK : show desktop      CANC : cancel
- *   - 1-9 : switch to desktop N (move window there with WM_MOVE)   D< / D> : desktop left/right   DPRV : previous desktop
+ * Windows Manager: FancyWM (https://github.com/FancyWM/fancywm), a Windows tiling WM.
  *
- * Every non-WM key is KC_NO so no ambient mod (HYPER/MEH/OALT/homerow) leaks into
- * the Shift+Win chord. WM_MOVE / WM_SWAP are on the right thumb.
+ * How a key fires: fancywm() (custom_keys.c) drops every held mod, taps FancyWM's
+ * two-key activation chord (Alt+Win — set the same in FancyWM's settings), waits
+ * ~30 ms for its modal to arm, then taps one secondary key. So each key below =
+ * "enter FancyWM command mode, then press X".
+ *
+ * Held mode keys (right thumb) re-purpose the direction + desktop keys:
+ *   MOV  WM_MOVE  hold: L/R/U/D now MOVE the focused window; D1..D9 / D< / D>
+ *                 now SEND the window to that desktop (instead of just switching)
+ *   SWP  WM_SWAP  hold: L/R/U/D now SWAP the focused window with its neighbour
+ *
+ * Keyword glossary  —  label (on the TFT) : keycode : what it does in FancyWM
+ *   <  >  ^  v : WM_L/R/U/D : move keyboard FOCUS to the tiled window in that
+ *               direction  (or move / swap it, per the held mode above)
+ *   D1..D9    : WM_1..WM_9  : switch to virtual desktop 1..9
+ *   D<  /  D> : WM_DL / WM_DR : switch to the virtual desktop left / right of here
+ *   D~        : WM_DPRV     : jump back to the previously-focused virtual desktop
+ *   PNH       : WM_PANH     : wrap the focused window in a new HORIZONTAL panel
+ *   PNV       : WM_PANV     : ... a new VERTICAL panel
+ *   PNS       : WM_PANS     : ... a new STACK panel (one window shown, rest hidden)
+ *   FLT       : WM_FLOAT    : toggle the focused window between tiled and floating
+ *   PRO       : WM_PROMO    : promote the focused window to the main / largest pane
+ *   RFR       : WM_REFR     : re-run the tiling layout on the current workspace
+ *   TGL       : WM_TOGL     : turn the FancyWM tiling manager on / off entirely
+ *   DSK       : WM_SHDSK    : "show desktop" — minimise / restore all windows
+ *   ESC       : WM_CANC     : cancel the pending command, dismiss the FancyWM modal
+ *   WM        : TT(_WM)     : this layer's key (tap = lock the layer, hold = momentary)
+ *   BASE      : TO(_ALPHA)  : hard exit straight back to the base alpha layer
+ *
+ * Every non-WM key on this layer is KC_NO (not transparent) so no ambient mod
+ * (HYPER / MEH / OALT / home-row) can leak into the Alt+Win activation chord.
+ *
+ * D1..D9 follow the _NAV numpad (7 8 9 / 4 5 6 / 1 2 3, top to bottom).
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
- * |  TOGL  | REFR |  D1  |  D2  |  D3  | DPRV |                              | PANH | PANV |   ↑  | PANS | SHDSK |  CANC  |
+ * |  TGL   | RFR  |  D7  |  D8  |  D9  |  D~  |                              | PNH  | PNV  |   ^  | PNS  |  DSK  |  ESC   |
  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * | FLOAT  |  D<  |  D4  |  D5  |  D6  |  D>  |                              |      |  ←   |   ↓  |   →  |      | PROMO  |
+ * |  FLT   |  D<  |  D4  |  D5  |  D6  |  D>  |                              |      |  <   |   v  |   >  |      |  PRO   |
  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | BASE   |      |  D7  |  D8  |  D9  |      |      |      |  |      |      |      |      |      |      |      |        |
+ * | BASE   |      |  D1  |  D2  |  D3  |      |      |      |  |      |      |      |      |      |      |      |        |
  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |  WM  |      |      |      |  | SWAP | MOVE |      |      |      |
+ *                        |      |  WM  |      |      |      |  | SWP  | MOV  |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
- * BASE = TO(_ALPHA) — hard exit back to the base layer.
  */
     [_WM] = LAYOUT_split_3x6_5_hlc(
-      WM_TOGL , WM_REFR, WM_1  , WM_2  , WM_3  , WM_DPRV,                                     WM_PANH, WM_PANV, WM_U  , WM_PANS, WM_SHDSK, WM_CANC ,
+      WM_TOGL , WM_REFR, WM_7  , WM_8  , WM_9  , WM_DPRV,                                     WM_PANH, WM_PANV, WM_U  , WM_PANS, WM_SHDSK, WM_CANC ,
       WM_FLOAT, WM_DL  , WM_4  , WM_5  , WM_6  , WM_DR  ,                                     KC_NO  , WM_L   , WM_D  , WM_R  , KC_NO   , WM_PROMO,
-      TO(_ALPHA), KC_NO, WM_7  , WM_8  , WM_9  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO , KC_NO , KC_NO   , KC_NO   ,
+      TO(_ALPHA), KC_NO, WM_1  , WM_2  , WM_3  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO , KC_NO , KC_NO   , KC_NO   ,
                                  KC_NO  , WM     , KC_NO  , KC_NO  , KC_NO  , WM_SWAP, WM_MOVE, KC_NO  , KC_NO  , KC_NO,
       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,                                                            KC_NO, KC_NO, KC_NO, KC_NO, KC_NO
     ),
@@ -466,9 +401,51 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
     ),
+
+/*
+ * WM desktop picker: held via a 4-key combo from an alpha layer, for as long as
+ * the chord is held. Two ways in, and you pick with whichever hand is free:
+ *   hold Z+X+C+D (left bottom)  -> pick with the RIGHT hand, numpad order
+ *   hold H+,+.+/ (right bottom) -> pick with the LEFT hand, mirror-pair order
+ * Tap that hand's inner thumb (one-shot Shift) first -> MOVE the focused window
+ * to the desktop instead of switching (FancyWM Shift+N). RGB lights only the
+ * side in play (held cluster white, desktops green, Shift blue).
+ *
+ *   right (numpad)    left (mirror pairs)
+ *     D7 D8 D9           home:  A R S T G -> D8 D7 D6 D5 D9
+ *     D4 D5 D6           bot :  Z X C D   -> D4 D3 D2 D1
+ *     D1 D2 D3
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |        |      |      |      |      |      |                              |      |  D7  |  D8  |  D9  |      |        |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |        |  D8  |  D7  |  D6  |  D5  |  D9  |                              |      |  D4  |  D5  |  D6  |      |        |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |        |  D4  |  D3  |  D2  |  D1  |      |      |      |  |      |      |      |  D1  |  D2  |  D3  |      |        |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |      |      |      |      | OSSf |  | OSSf |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_WMSEL] = LAYOUT_split_3x6_5_hlc(
+    _______, _______, _______, _______, _______, _______,                                     _______, WM_7   , WM_8   , WM_9   , _______, _______,
+    _______, WM_8   , WM_7   , WM_6   , WM_5   , WM_9   ,                                     _______, WM_4   , WM_5   , WM_6   , _______, _______,
+    _______, WM_4   , WM_3   , WM_2   , WM_1   , _______, _______, _______, _______, _______, _______, WM_1   , WM_2   , WM_3   , _______, _______,
+                               _______, _______, _______, _______, OSHFT  , OSHFT  , _______, _______, _______, _______,
+    _______, _______, _______, _______, _______,                                                       _______, _______, _______, _______, _______
+    ),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_user_custom(keycode, record)) return false;
     return true;
+}
+
+void keyboard_post_init_user(void) {
+    os_layer_init();  // restore the persisted mac/win mode
+#ifdef RGB_MATRIX_ENABLE
+    // Force PaletteFx Reactive + Polarized palette on every plug-in — the EEPROM
+    // usually holds a stale mode, so RGB_MATRIX_DEFAULT_* alone never takes.
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_PALETTEFX_REACTIVE);
+    rgb_matrix_sethsv_noeeprom(RGB_MATRIX_HUE_STEP * 9, 255, rgb_matrix_get_val());
+#endif
 }

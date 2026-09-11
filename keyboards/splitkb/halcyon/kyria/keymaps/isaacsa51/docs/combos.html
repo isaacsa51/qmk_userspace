@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Combos — Kyria Keymap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem('kmtheme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<nav class="topnav"><div class="inner">
+  <a class="brand" href="index.html"><span>Kyria</span> Keymap</a>
+  <a class="nav" href="index.html">Overview</a>
+  <a class="nav" href="layers.html">Layers</a>
+  <a class="nav on" href="combos.html">Combos</a>
+  <a class="nav" href="behaviour.html">Behaviour</a>
+  <a class="nav" href="build.html">Build</a>
+  <button class="theme" data-theme-toggle title="Toggle light / dark">◐</button>
+</div></nav>
+
+<main class="wrap">
+  <p class="eyebrow">Combos</p>
+  <h1>Symbol <span>combos</span></h1>
+  <p class="lead">An iconic cipher — chord a shape or a tone, get the symbol. Each
+  bar joins the two keys you press; the symbol sits on the bar. Combos resolve
+  against layer 0, so the same <em>physical</em> keys fire them on every base
+  (letters shown are Colemak-DH). Window ≈ 30&nbsp;ms; 80&nbsp;ms for the 4-key
+  gestures. Active only on the three base layers.</p>
+
+  <h2 class="shead">The whole cipher</h2>
+  <p class="lead">Every combo at once — the bars show where the chords land and how
+  they cluster. The labelled boards below break it out group by group.</p>
+  <div id="cb-all"></div>
+
+  <p class="cb-cap">Bracket pairs</p>
+  <div id="cb-g0"></div>
+
+  <p class="cb-cap">Operators</p>
+  <div id="cb-g1"></div>
+
+  <p class="cb-cap">Prompts &amp; quotes</p>
+  <div id="cb-g2"></div>
+
+  <p class="cb-cap">Code symbols</p>
+  <div id="cb-g3"></div>
+
+  <h2 class="shead">Full-row gestures</h2>
+  <p class="lead">Slap the whole row as one chord. <kbd>LMB</kbd>+<kbd>RMB</kbd> on the
+  Mouse layer is a separate combo → middle&nbsp;/&nbsp;wheel click.</p>
+  <div id="cb-gest"></div>
+
+  <p class="tnote"><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>D</kbd> overlaps the <span class="sym">{</span> / <span class="sym">}</span> combos and
+  <kbd>H</kbd><kbd>,</kbd><kbd>.</kbd><kbd>/</kbd> overlaps <span class="sym">&lt;</span> / <span class="sym">&gt;</span> — an uneven roll can emit a stray bracket.</p>
+
+  <div class="foot">
+    Generated from <code>combos/combos.c</code> (<code>key_combos[]</code>). · <a href="index.html">Overview</a>
+  </div>
+</main>
+
+<script src="keymap.js"></script>
+<script>
+  var all = [];
+  for (var g in KM.COMBO_GROUPS) all = all.concat(KM.COMBO_GROUPS[g]);
+  KM.renderComboBoard('cb-all', { pairs: all, gests: KM.COMBO_GESTURES, noLabels: true, label: 'all combos' });
+  KM.renderComboGroups('cb-g');
+  KM.renderComboBoard('cb-gest', { gests: KM.COMBO_GESTURES, label: 'full-row gestures' });
+</script>
+</body>
+</html>

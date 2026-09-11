@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build &amp; flash — Kyria Keymap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem('kmtheme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<nav class="topnav"><div class="inner">
+  <a class="brand" href="index.html"><span>Kyria</span> Keymap</a>
+  <a class="nav" href="index.html">Overview</a>
+  <a class="nav" href="layers.html">Layers</a>
+  <a class="nav" href="combos.html">Combos</a>
+  <a class="nav" href="behaviour.html">Behaviour</a>
+  <a class="nav on" href="build.html">Build</a>
+  <button class="theme" data-theme-toggle title="Toggle light / dark">◐</button>
+</div></nav>
+
+<main class="wrap">
+  <p class="eyebrow">Build &amp; flash</p>
+  <h1>Build <span>&amp; flash</span></h1>
+  <p class="lead">This keymap is a QMK <b>userspace</b> overlay — it needs a sibling
+  <code>qmk_firmware</code> checkout and the <code>qmk</code> CLI. Build from the
+  <b>QMK MSYS</b> terminal.</p>
+
+  <h2 class="shead">Compile — one build per half</h2>
+  <pre><span class="c"># left half — TFT display module</span>
+qmk compile -kb splitkb/halcyon/kyria/rev4 -km isaacsa51 -e HLC_TFT_DISPLAY=1 -e TARGET=kyria_display
+
+<span class="c"># right half — Cirque trackpad module</span>
+qmk compile -kb splitkb/halcyon/kyria/rev4 -km isaacsa51 -e HLC_CIRQUE_TRACKPAD=1 -e TARGET=kyria_cirque</pre>
+  <p class="tnote"><code>TARGET</code> only names the output <code>.uf2</code>. The module flag
+  (<code>HLC_TFT_DISPLAY</code> / <code>HLC_CIRQUE_TRACKPAD</code> / <code>HLC_ENCODER</code> / <code>HLC_NONE</code>)
+  is what selects the per-half build.</p>
+
+  <h2 class="shead">Flash — RP2040 UF2</h2>
+  <ul class="rows-list">
+    <li><span class="t">1</span><span class="d">Double-tap the reset button on a half → the <code>RPI-RP2</code> drive mounts.</span></li>
+    <li><span class="t">2</span><span class="d">Drop the matching <code>.uf2</code> onto it. The half reboots into the firmware.</span></li>
+    <li><span class="t">3</span><span class="d">Repeat for the other half with its <code>.uf2</code>.</span></li>
+  </ul>
+  <p class="tnote">Handedness is automatic (GP24 pin) — the same handedness build works on both sides.
+  If a fresh build ignores the RGB defaults, reset EEPROM once: hold <code>EE_CLR</code> while plugging in,
+  or flash then bootloader-reset.</p>
+
+  <h2 class="shead">Modules &amp; features</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Piece</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>getreuer/palettefx</td><td><code>keymap.json</code> + <code>rgb_matrix_user.inc</code> — RGB effects</td></tr>
+      <tr><td>getreuer/select_word</td><td><code>keymap.json</code> — the <code>SELWORD</code> keycode</td></tr>
+      <tr><td>Halcyon module code</td><td><code>users/halcyon_modules/splitkb/</code> — TFT / Cirque / encoder</td></tr>
+      <tr><td>On-display keymap renderer</td><td><code>display/</code>, wired in <code>rules.mk</code> under <code>HLC_TFT_DISPLAY</code></td></tr>
+      <tr><td>Feature flags</td><td><code>rules.mk</code> — COMBO, TAP_DANCE, CAPS_WORD, POINTING_DEVICE, MOUSEKEY, LAYER_LOCK</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="shead">Config knobs</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Define</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>CHORDAL_HOLD / PERMISSIVE_HOLD</td><td>on — home-row mod resolution</td></tr>
+      <tr><td>TAPPING_TERM</td><td>200 &nbsp;(QUICK_TAP_TERM 0, TAPPING_TOGGLE 2)</td></tr>
+      <tr><td>COMBO_TERM / COMBO_STRICT_TIMER</td><td>30 ms strict; per-combo 80 ms for the 4-key rows</td></tr>
+      <tr><td>MK_KINETIC_SPEED / MOUSEKEY_INITIAL_SPEED / MOUSEKEY_BASE_SPEED</td><td>kinetic mouse — 100 → 6000 px/s ramp</td></tr>
+      <tr><td>RGB_MATRIX_KEYPRESSES</td><td>on — required for the Reactive effect</td></tr>
+      <tr><td>RGB_MATRIX_DEFAULT_MODE / _HUE</td><td>PALETTEFX_REACTIVE · HUE_STEP × 9 (Polarized)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="foot">
+    Serve this folder with any static host (e.g. GitHub Pages → <code>/docs</code>), or just open <code>index.html</code>. · <a href="index.html">Overview</a>
+  </div>
+</main>
+
+<script src="keymap.js"></script>
+</body>
+</html>

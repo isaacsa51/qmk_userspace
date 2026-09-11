@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layers — Kyria Keymap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem('kmtheme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<nav class="topnav"><div class="inner">
+  <a class="brand" href="index.html"><span>Kyria</span> Keymap</a>
+  <a class="nav" href="index.html">Overview</a>
+  <a class="nav on" href="layers.html">Layers</a>
+  <a class="nav" href="combos.html">Combos</a>
+  <a class="nav" href="behaviour.html">Behaviour</a>
+  <a class="nav" href="build.html">Build</a>
+  <button class="theme" data-theme-toggle title="Toggle light / dark">◐</button>
+</div></nav>
+
+<main class="wrap">
+  <p class="eyebrow">Layers</p>
+  <h1>All <span>layers</span></h1>
+  <p class="lead">Eleven layers. <code>·</code> is transparent (falls through to the
+  layer below); dashed keys are structural or pass-through. Home-row mods show the
+  tapped letter — hold for the mod named in the superscript. Below each half sits
+  its thumb cluster: a short upper row plus the five main thumb keys.</p>
+  <p class="tnote">The <b style="color:var(--press-edge)">yellow</b> thumb key on each overlay board is the one you hold (or toggled) to be on that layer.</p>
+
+  <h2 class="shead">Base layers</h2>
+  <div id="base"></div>
+
+  <h2 class="shead">Overlay layers</h2>
+  <div id="overlay"></div>
+
+  <div class="rd-legend">
+    <span><i class="s-mod"></i>hold = modifier</span>
+    <span><i class="s-dead"></i>smart tilde — dead key</span>
+    <span><i class="s-dim"></i>transparent / no-op</span>
+    <span>⌥¹ / ⇧¹ = one-shot mod · SF* / CT* = tap one-shot / hold held-mod · Fn = momentary layer</span>
+  </div>
+
+  <h2 class="shead">Reaching each layer</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Layer</th><th>Key</th><th>Kind</th></tr></thead>
+    <tbody>
+      <tr><td>Alpha / Crate / Canaria</td><td class="mono">Alpha / Cana / Crate on Adjust</td><td><code>DF()</code> — sets the default base</td></tr>
+      <tr><td>Nav</td><td class="mono">Nav — left thumb</td><td><code>TT()</code> — hold, or tap-tap to lock</td></tr>
+      <tr><td>Sym</td><td class="mono">Sym — right thumb</td><td><code>TT()</code></td></tr>
+      <tr><td>Function</td><td class="mono">Fn — upper-right thumb (next to Caps)</td><td><code>TT()</code></td></tr>
+      <tr><td>Adjust</td><td class="mono">Adjust — on Function</td><td><code>TT()</code>, reached from Function</td></tr>
+      <tr><td>Window manager</td><td class="mono">WM — left thumb</td><td><code>TT()</code> — tap to lock, hold for momentary</td></tr>
+      <tr><td>Game</td><td class="mono">Game — on Adjust, or this layer's inner-right thumb</td><td><code>TG()</code> — toggle</td></tr>
+      <tr><td>Mouse</td><td class="mono">middle-right thumb on Nav</td><td><code>MO()</code> — momentary</td></tr>
+      <tr><td>WM desktop picker</td><td class="mono">combo: <kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>D</kbd> or <kbd>H</kbd><kbd>,</kbd><kbd>.</kbd><kbd>/</kbd></td><td>held while the chord is held</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="shead">Notes per layer</h2>
+  <ul class="rows-list">
+    <li><span class="t">Nav</span><span class="d"><b>W‹ / W›</b> = word left / right (OS-aware; tap <b>SF*</b> first to select by word). Left cluster = OS-aware DelLn / DelWrd / Bksp / Cut / Copy / Paste. <b>SelW</b> = getreuer select_word — tap to select, tap again to extend.</span></li>
+    <li><span class="t">Sym</span><span class="d">Complete symbol set — the fallback for anything the combos don't cover (<code>&amp;</code> <code>%</code> <code>~</code> backtick).</span></li>
+    <li><span class="t">Function</span><span class="d">Right-hand home row is plain modifiers, so you can hold <b>Fn</b> and stack mods. <b>Adj</b> jumps to Adjust.</span></li>
+    <li><span class="t">Adjust</span><span class="d"><b>Alpha / Cana / Crate</b> set the default base; <b>Game</b> toggles the game layer. RGB row: <code>RM_*</code> — on a PaletteFx effect, Hue = palette selector.</span></li>
+    <li><span class="t">WM</span><span class="d">Every key clears held mods, taps FancyWM's <b>Alt+Win</b> chord, waits ~30 ms, taps one key. Hold <b>Mov</b> / <b>Swp</b> to move / swap instead of focus. <b>Base</b> = <code>TO(_ALPHA)</code> hard exit. D1–D9 follow the Nav numpad.</span></li>
+    <li><span class="t">Game</span><span class="d">Plain QWERTY block — no mod-taps, tap dances, or combos fire mid-game.</span></li>
+    <li><span class="t">Mouse</span><span class="d">Left hand = wheel, right hand = pointer, mirroring the Nav arrow inverted-T. <kbd>LMB</kbd>+<kbd>RMB</kbd> combo = middle click.</span></li>
+    <li><span class="t">WM picker</span><span class="d">Hold <kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><kbd>D</kbd> → pick with the right hand (numpad order); hold <kbd>H</kbd><kbd>,</kbd><kbd>.</kbd><kbd>/</kbd> → pick with the left. Tap the picking hand's inner-thumb one-shot Shift first → <em>move</em> the window there instead of switching.</span></li>
+  </ul>
+
+  <div class="foot">
+    Generated from <code>keymap.c</code>. · <a href="index.html">Overview</a>
+  </div>
+</main>
+
+<script src="keymap.js"></script>
+<script>KM.renderBoards('base', 'overlay');</script>
+</body>
+</html>

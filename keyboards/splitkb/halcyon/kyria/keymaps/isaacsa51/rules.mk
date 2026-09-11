@@ -6,8 +6,13 @@ USER_NAME := halcyon_modules
 # This adds custom functionality from keymaps
 SRC += custom_keys/custom_keys.c
 SRC += os_detection/os_layer.c
-SRC += combos/combos.c
 SRC += tap_dance/td_declarations.c
+
+# combos/combos.c defines key_combos[]; QMK's keymap introspection needs that
+# array's real definition (not just a declaration) in scope to size it, so it's
+# pulled in via textual #include rather than compiled as its own translation
+# unit. Do NOT also add it to SRC — see quantum/keymap_introspection.c.
+INTROSPECTION_KEYMAP_C = combos/combos.c
 
 # On-display keymap renderer (only meaningful with the TFT module)
 ifeq ($(strip $(HLC_TFT_DISPLAY)), 1)

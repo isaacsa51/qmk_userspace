@@ -3,8 +3,6 @@
 
 enum {
     TD_CMD_TILDE,
-    TD_OSHTSF,
-    TD_OSHTCT,
     TD_CAPS,
     TD_COUNT
 };
@@ -22,9 +20,14 @@ enum custom_keycodes {
     U_COPY, U_CUT, U_PASTE,
     ALTTAB,               // quick window switch: Cmd+Tab (mac) / Alt+Tab (win)
 
+    // _NAV right thumb: tap = one-shot mod (stacks), hold = held mod that engages
+    // the instant another key is pressed (no tapping-term wait).
+    OS_SFT, OS_CTL,
+
     // FancyWM (Windows) — each sends the Shift+Win activation chord, then a secondary
     WM_L, WM_R, WM_U, WM_D,        // direction: focus, or move/swap while WM_MOVE/WM_SWAP held
     WM_MOVE, WM_SWAP,              // held modes for the direction + desktop keys
+    WM_SEL_L, WM_SEL_R,           // hold Z+X+C+D (left) / H+,+.+/ (right) -> _WMSEL picker
     WM_PANH, WM_PANV, WM_PANS,     // create horizontal / vertical / stack panel
     WM_FLOAT,                      // toggle floating
     WM_PROMO,                      // pull window up (promote out of panel)
