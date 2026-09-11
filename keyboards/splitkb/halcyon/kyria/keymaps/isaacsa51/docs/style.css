@@ -169,6 +169,17 @@ h2.shead::after{content:""; flex:1; height:1px; background:var(--line-2)}
 .hero-svg .hk-bar{fill:#25c46a}
 .hero-svg .hk-bar-t, .hero-svg .hk-bt{fill:#04240f; font:700 10px/1 "IBM Plex Mono", monospace; letter-spacing:.06em}
 
+/* lucide icons swapped in for cryptic keys (Bksp, Cut, Vol+, ...) — same
+   colour role as the text they replace (hk-b / hk-s / hk-t). */
+.hero-svg .hi{stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block}
+.hero-svg .hi-b{color:#fff}
+.hero-svg .hi-s{color:rgba(255,255,255,.82)}
+.hero-svg .hi-t{color:#fff; stroke-width:2.2}
+.hero-svg .hk.normal .hi-b, .hero-svg .hk.normal .hi-t{color:var(--ink)}
+.hero-svg .hk.normal .hi-s{color:var(--ink-3)}
+.hero-svg .hk.trans .hi-b, .hero-svg .hk.trans .hi-t{color:var(--ink-3)}
+.hero-svg .hk.mod .hi-b, .hero-svg .hk.mod .hi-t{color:#04240f}
+
 .hero-leg{
   display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:14px;
   font:600 11px/1 "IBM Plex Mono", monospace; letter-spacing:.06em; color:var(--ink-2);

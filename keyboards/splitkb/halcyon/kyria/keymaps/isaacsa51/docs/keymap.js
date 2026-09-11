@@ -59,6 +59,36 @@
     s.innerHTML = inner;
     return s;
   }
+  // Nested <svg> (own viewBox, positioned/sized like an <image>) for icons
+  // dropped straight into another SVG document — the hero board.
+  function iconAt(label, x, y, size, cls) {
+    var s = ico(ICON[label]);
+    s.setAttribute('x', x);
+    s.setAttribute('y', y);
+    s.setAttribute('width', size);
+    s.setAttribute('height', size);
+    s.setAttribute('class', cls);
+    return s;
+  }
+  // Lays out a key's small sub-legend (up to 3 Nav/Sym/Fn labels) left-to-right
+  // and centred, swapping in a Lucide icon for any label the ICON map covers.
+  function subsRow(g, cx, y, subs) {
+    var ICON_W = 13, GAP = 9, CHAR_W = 7.3;
+    var parts = subs.map(function (s) {
+      return ICON[s] ? { icon: s, w: ICON_W } : { text: s, w: s.length * CHAR_W };
+    });
+    var total = parts.reduce(function (sum, p) { return sum + p.w; }, 0) + GAP * (parts.length - 1);
+    var x = cx - total / 2;
+    parts.forEach(function (p) {
+      if (p.icon) {
+        g.appendChild(iconAt(p.icon, x, y - ICON_W + 3, ICON_W, 'hi hi-s'));
+      } else {
+        var t = cbMk('text', { x: x + p.w / 2, y: y, 'text-anchor': 'middle', 'class': 'hk-s' });
+        t.textContent = p.text; g.appendChild(t);
+      }
+      x += p.w + GAP;
+    });
+  }
 
   function cap(label, opt) {
     var k = el('div', 'k');
@@ -222,12 +252,15 @@
     function key(x, y, base, subs, role, mod) {
       var g = mk('g', { 'class': 'hk ' + role });
       g.appendChild(mk('rect', { x: x, y: y, width: KW, height: KW, rx: 12, 'class': 'hk-bg' }));
-      var b = mk('text', { x: x + KW / 2, y: y + (subs.length ? 33 : 40) + (base.length > 2 ? -3 : 0), 'text-anchor': 'middle', 'class': 'hk-b' + (base.length > 2 ? ' sm' : '') });
-      b.textContent = base; g.appendChild(b);
-      if (subs.length) {
-        var s = mk('text', { x: x + KW / 2, y: y + (mod ? 52 : 56), 'text-anchor': 'middle', 'class': 'hk-s' });
-        s.textContent = subs.join('   '); g.appendChild(s);
+      var baseY = y + (subs.length ? 33 : 40) + (base.length > 2 ? -3 : 0);
+      if (ICON[base]) {
+        var bs = base.length > 2 ? 20 : 26;
+        g.appendChild(iconAt(base, x + KW / 2 - bs / 2, baseY - bs + 7, bs, 'hi hi-b'));
+      } else {
+        var b = mk('text', { x: x + KW / 2, y: baseY, 'text-anchor': 'middle', 'class': 'hk-b' + (base.length > 2 ? ' sm' : '') });
+        b.textContent = base; g.appendChild(b);
       }
+      if (subs.length) subsRow(g, x + KW / 2, y + (mod ? 52 : 56), subs);
       if (mod) {
         g.appendChild(mk('rect', { x: x + 4, y: y + KW - 17, width: KW - 8, height: 15, rx: 3, 'class': 'hk-bar' }));
         var mt = mk('text', { x: x + KW / 2, y: y + KW - 6, 'text-anchor': 'middle', 'class': 'hk-bt' });
@@ -254,10 +287,16 @@
     function thumbRow(keys, roles, x0, y, w) {
       keys.forEach(function (lab, i) {
         if (DIM(lab)) return;
+        var cx = x0 + i * (w + TG);
         var g = mk('g', { 'class': 'hk ' + (roles[i] || 'normal') });
-        g.appendChild(mk('rect', { x: x0 + i * (w + TG), y: y, width: w, height: TH, rx: 9, 'class': 'hk-bg' }));
-        var t = mk('text', { x: x0 + i * (w + TG) + w / 2, y: y + TH / 2 + 5, 'text-anchor': 'middle', 'class': 'hk-t' });
-        t.textContent = lab; g.appendChild(t);
+        g.appendChild(mk('rect', { x: cx, y: y, width: w, height: TH, rx: 9, 'class': 'hk-bg' }));
+        if (ICON[lab]) {
+          var s = 17;
+          g.appendChild(iconAt(lab, cx + w / 2 - s / 2, y + TH / 2 - s / 2, s, 'hi hi-t'));
+        } else {
+          var t = mk('text', { x: cx + w / 2, y: y + TH / 2 + 5, 'text-anchor': 'middle', 'class': 'hk-t' });
+          t.textContent = lab; g.appendChild(t);
+        }
         svg.appendChild(g);
       });
     }
